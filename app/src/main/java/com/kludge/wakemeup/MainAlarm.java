@@ -11,6 +11,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -43,8 +44,15 @@ public class MainAlarm extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.list_alarms);
         listView.setAdapter(alarmAdapter);
 
-        //sets up the switch listener
+        //sets up the longClick listener for the ListView
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
+
+                return false;
+            }
+        });
 
         //add_alarm button
         Button addAlarm = (Button) findViewById(R.id.add_alarm);
@@ -86,6 +94,7 @@ public class MainAlarm extends AppCompatActivity {
     }
 }
 
+//AlarmAdapter for the ListView
 class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
     public AlarmAdapter(Context context, ArrayList<AlarmDetails> alarmList){
         super(context, 0, alarmList);

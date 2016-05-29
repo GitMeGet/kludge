@@ -5,7 +5,8 @@
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:paddingBottom="10dp"
-    android:paddingTop="10dp">
+    android:paddingTop="10dp"
+    android:longClickable="true">
 
     <TextView android:id="@+id/alarm_name"
         android:layout_width="wrap_content"
