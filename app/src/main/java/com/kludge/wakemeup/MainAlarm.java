@@ -56,6 +56,7 @@ public class MainAlarm extends AppCompatActivity {
 
         //add_alarm button
         Button addAlarm = (Button) findViewById(R.id.add_alarm);
+        assert addAlarm != null;
         addAlarm.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
                 //adds alarm
