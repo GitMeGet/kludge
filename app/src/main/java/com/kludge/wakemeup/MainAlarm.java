@@ -56,6 +56,7 @@ public class MainAlarm extends AppCompatActivity {
 
         //add_alarm button
         Button addAlarm = (Button) findViewById(R.id.add_alarm);
+        assert addAlarm != null;
         addAlarm.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
                 //adds alarm
@@ -136,23 +137,3 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
 }
 
 
-class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState){
-        //selects DEFAULT TIME when opening dialog
-        final Calendar c = Calendar.getInstance(); //retrieves current time
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int min = c.get(Calendar.MINUTE);
-
-        //creates new instance of TimePickerDialog then return it, (context, listener, hour, minute, 24hrView?)
-        return new TimePickerDialog(getActivity(), this, hour, min, DateFormat.is24HourFormat(getActivity()));
-    }
-
-    //does stuff with time selected by user
-    public void onTimeSet(TimePicker view, int hour, int min){
-        //changes the LAST alarm to the ListAdapter, which should be the alarm with only the name
-        MainAlarm.alarms.get(MainAlarm.alarms.size()-1).setTime(hour, min);
-        MainAlarm.alarmAdapter.notifyDataSetChanged();
-    }
-}
