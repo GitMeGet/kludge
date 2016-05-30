@@ -44,7 +44,7 @@ public class MainAlarm extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.list_alarms);
         listView.setAdapter(alarmAdapter);
 
-        //sets up the longClick listener for the ListView
+        //sets up the longClick listener for the ListView to configure individual alarms
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -116,6 +116,9 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
 
         //gets the switch widget for the View
         Switch aSwitch = (Switch) convertView.findViewById(R.id.alarm_on_state);
+
+        //if the alarm state was on, set aSwitch accordingly
+
 
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
