@@ -26,7 +26,7 @@ import java.util.Calendar;
 
 public class MainAlarm extends AppCompatActivity {
 
-    //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC?????
+    //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
     static ArrayList<AlarmDetails> alarms = new ArrayList<AlarmDetails>();
 
     //arrayAdapter for the ListView
