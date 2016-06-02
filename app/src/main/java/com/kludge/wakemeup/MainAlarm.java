@@ -8,7 +8,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MainAlarm extends AppCompatActivity {
+    private final int ID_CONTEXT_MENU_EDIT=1, ID_CONTEXT_MENU_DELETE=2; //id tags for the ContextMenu items
 
     //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
     static ArrayList<AlarmDetails> alarms = new ArrayList<AlarmDetails>();
@@ -40,21 +44,12 @@ public class MainAlarm extends AppCompatActivity {
         //initiates AlarmAdapter for ListView, (context, layout, strArray)
         alarmAdapter = new AlarmAdapter(this, alarms);
 
-        //creates ListView to populate alarms, attach the adapter to this ListView
+        //sets up the adapter to this ListView
         ListView listView = (ListView) findViewById(R.id.list_alarms);
+        assert listView != null;
         listView.setAdapter(alarmAdapter);
 
-        //sets up the longClick listener for the ListView to configure individual alarms
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-
-                return false;
-            }
-        });
-
-        //add_alarm button
+        //sets up add_alarm button's onClickListener
         Button addAlarm = (Button) findViewById(R.id.add_alarm);
         assert addAlarm != null;
         addAlarm.setOnClickListener(new View.OnClickListener() {
@@ -63,9 +58,39 @@ public class MainAlarm extends AppCompatActivity {
                 addAlarm();
             }
         });
+
+        //registers ListView for Context Menu to Edit,Delete alarms
+        registerForContextMenu(listView);
     }
 
-    //adds alarm to the alarms ArrayList
+    //setup the Context menu
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo){
+        super.onCreateContextMenu(menu,view,menuInfo);
+
+        //if listView is being long clicked, inflate the subMenu
+        if(view.getId() == R.id.list_alarms){
+           menu.add(0, ID_CONTEXT_MENU_EDIT, 0, "Edit");   //(Group ID Key, MenuItem Key, Order of Item, String to Display)
+           menu.add(0, ID_CONTEXT_MENU_DELETE, 0, "Delete");
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem menu){
+        switch(menu.getItemId()){
+            case ID_CONTEXT_MENU_EDIT:
+                //open up edit alarm activity?
+                return true;
+            case ID_CONTEXT_MENU_DELETE:
+                //fetches the AdapterView for the context menu, retrieves the position of the View, delete the alarm according to pos
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menu.getMenuInfo();
+                alarmAdapter.remove(alarms.get(info.position));
+                return true;
+        }
+        return false;
+    }
+
+    //adds alarm to the alarms ArrayList (TO BE CHANGED! open up new activity with IntentWithResult!
     private void addAlarm() {
         //fetches EditText field
         String alarmName = ((EditText) findViewById(R.id.alarm_name)).getText().toString();
@@ -74,7 +99,7 @@ public class MainAlarm extends AppCompatActivity {
         showTimePickerDialog();
     }
 
-    //show the timePicker dialog inside a DialogFragment
+    //show the timePicker dialog inside a DialogFragment, TO BE MOVED TO NEW ACTIVITY!
     private void showTimePickerDialog(){
         DialogFragment newFrag = new TimePickerFragment();
         newFrag.show(getSupportFragmentManager(), "timePicker"); //requires instance of a FragmentManager, + unique tag for this fragment
@@ -111,14 +136,14 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         if(convertView == null)
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.alarm_list_item, parent, false);
 
-        //lookup the Views to be populated, ie. alarm name and alarm time
+        //lookup the TextViews to be populated, ie. alarm name and alarm time
         TextView alarmName = (TextView) convertView.findViewById(R.id.alarm_name);
         TextView alarmTime = (TextView) convertView.findViewById(R.id.alarm_time);
 
         //gets the switch widget for the View
         Switch aSwitch = (Switch) convertView.findViewById(R.id.alarm_on_state);
 
-        //if the alarm state was on, set aSwitch accordingly
+        //if the alarm state was on, set aSwitch accordingly ???
 
 
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -138,5 +163,3 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         return convertView;
     }
 }
-
-
