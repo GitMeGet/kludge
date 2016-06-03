@@ -22,7 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AlarmWake"></activity>
+        <activity android:name=".AlarmWake" />
+        <activity android:name=".InputAlarm"></activity>
     </application>
 
 </manifest>

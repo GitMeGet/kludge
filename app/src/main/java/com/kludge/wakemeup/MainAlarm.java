@@ -4,11 +4,14 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +29,13 @@ import java.util.Calendar;
 
 public class MainAlarm extends AppCompatActivity {
 
+    //keys
+    static final int ID_ADD_ALARM = 100;
+    static final int ID_RESULT_OK = 666;
+
+    static final int ID_CONTEXT_EDIT = 200;
+    static final int ID_CONTEXT_DELETE= 201;
+
     //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
     static ArrayList<AlarmDetails> alarms = new ArrayList<AlarmDetails>();
 
@@ -40,44 +50,84 @@ public class MainAlarm extends AppCompatActivity {
         //initiates AlarmAdapter for ListView, (context, layout, strArray)
         alarmAdapter = new AlarmAdapter(this, alarms);
 
-        //creates ListView to populate alarms, attach the adapter to this ListView
+        //sets up listView and attach the adapter to this ListView
         ListView listView = (ListView) findViewById(R.id.list_alarms);
+        assert listView != null;
         listView.setAdapter(alarmAdapter);
 
-        //sets up the longClick listener for the ListView to configure individual alarms
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-
-                return false;
-            }
-        });
-
-        //add_alarm button
-        Button addAlarm = (Button) findViewById(R.id.add_alarm);
-        assert addAlarm != null;
-        addAlarm.setOnClickListener(new View.OnClickListener() {
+        //sets up addAlarm button and listener
+        FloatingActionButton buttAddAlarm = (FloatingActionButton) findViewById(R.id.float_add_alarm);
+        assert buttAddAlarm != null;
+        buttAddAlarm.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
-                //adds alarm
-                addAlarm();
+                //opens add alarm activity
+                requestAddAlarm(view);
             }
         });
+
+        //sets up listView for contextMenu
+        registerForContextMenu(listView);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo){
+        super.onCreateContextMenu(menu, view, menuInfo);
+
+        switch(view.getId()){
+            case R.id.list_alarms:
+                menu.add(0, ID_CONTEXT_EDIT, 0 , "Edit");
+                menu.add(0, ID_CONTEXT_DELETE, 0, "Delete"); //(?, key, order, text)
+                break;
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case ID_CONTEXT_EDIT:
+                return true;
+            case ID_CONTEXT_DELETE:
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item; //FIX THIS SHIT
+                alarmAdapter.remove(alarms.get(info.position));
+                return super.onContextItemSelected(item);
+
+        }
+        return false;
+    }
+
+    //opens up activity to addAlarm
+    private void requestAddAlarm(View view) {
+        //sets up intent to inputAlarm
+        Intent addAlarm = new Intent(getApplicationContext(), InputAlarm.class);
+        startActivityForResult(addAlarm, ID_ADD_ALARM);
     }
 
     //adds alarm to the alarms ArrayList
-    private void addAlarm() {
-        //fetches EditText field
-        String alarmName = ((EditText) findViewById(R.id.alarm_name)).getText().toString();
-        alarms.add(new AlarmDetails(0,0,alarmName));
+    private void addAlarm(Intent data){
+        AlarmDetails newAlarm = new AlarmDetails(data.getIntExtra("hour", 0),
+                data.getIntExtra("minute", 0),
+                data.getStringExtra("alarm_name"));
 
-        showTimePickerDialog();
+        alarms.add(newAlarm);
+        alarmAdapter.notifyDataSetChanged();
     }
 
     //show the timePicker dialog inside a DialogFragment
     private void showTimePickerDialog(){
         DialogFragment newFrag = new TimePickerFragment();
         newFrag.show(getSupportFragmentManager(), "timePicker"); //requires instance of a FragmentManager, + unique tag for this fragment
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(resultCode == ID_RESULT_OK){
+            switch(requestCode){
+                case ID_ADD_ALARM:
+                    addAlarm(data);
+                    break;
+            }
+        }
     }
 
     @Override

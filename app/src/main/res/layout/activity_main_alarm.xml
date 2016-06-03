@@ -10,23 +10,19 @@
     android:orientation="vertical"
     tools:context="com.kludge.wakemeup.MainAlarm">
 
-    <Button android:id="@+id/add_alarm"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_alignParentRight="true"
-        android:text="@string/button_add" />
-
-    <EditText android:id="@+id/alarm_name"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:hint="@string/empty_alarm_field" />
-
     <ListView android:id="@+id/list_alarms"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_below="@id/add_alarm"/>
+        android:layout_below="@id/butt_add_alarm"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/float_add_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:src="@android:drawable/ic_input_add" />
 
 </RelativeLayout>
 
