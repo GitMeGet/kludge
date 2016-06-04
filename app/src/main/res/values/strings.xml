@@ -4,4 +4,6 @@
     <string name="alarm_name">ALARM_NAME</string>
     <string name="alarm_time"></string>
     <string name="empty_alarm_field">Enter Alarm Name</string>
+    <string name="title_activity_add_alarm">AddAlarm</string>
+    <string name="action_settings">Settings</string>
 </resources>
