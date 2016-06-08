@@ -1,6 +1,7 @@
 package com.kludge.wakemeup;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,6 +67,7 @@ public class AlarmJSONSerializer {
             // Build the array of crimes from JSONObjects
             for (int i = 0; i < array.length(); i++) {
                 alarms.add(new AlarmDetails(array.getJSONObject(i)));
+                Log.i("alarms_loaded","Alarms loaded "+i);
             }
         } catch (FileNotFoundException e) {
             // Ignore this one; it happens when starting fresh
