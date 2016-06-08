@@ -1,14 +1,11 @@
 package com.kludge.wakemeup;
 
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -16,16 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class MainAlarm extends AppCompatActivity {
 
@@ -37,7 +30,7 @@ public class MainAlarm extends AppCompatActivity {
     static final int ID_CONTEXT_DELETE= 201;
 
     //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
-    static ArrayList<AlarmDetails> alarms = new ArrayList<AlarmDetails>();
+    static ArrayList<AlarmDetails> alarms;
 
     //arrayAdapter for the ListView
     static AlarmAdapter alarmAdapter;
@@ -46,6 +39,9 @@ public class MainAlarm extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alarm);
+
+        // retrieve alarms from JSON
+        alarms = AlarmLab.get(this).getAlarms();
 
         //initiates AlarmAdapter for ListView, (context, layout, strArray)
         alarmAdapter = new AlarmAdapter(this, alarms);
@@ -143,6 +139,14 @@ public class MainAlarm extends AppCompatActivity {
 
         //restore info by taking it out eg. var = savedInstanceState.getString("key");
     }
+
+    // saves arraylist of alarms to database
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AlarmLab.get(this).saveAlarms();
+    }
+
 }
 
 //AlarmAdapter for the ListView
@@ -187,6 +191,8 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         //return completed view to render on screen
         return convertView;
     }
+
+
 }
 
 
