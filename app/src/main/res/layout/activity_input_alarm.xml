@@ -24,7 +24,7 @@
     <Button android:id="@+id/butt_add_alarm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_add"
+        android:text="Add/Save"
         android:onClick="addAlarm"/>
 
 </LinearLayout>

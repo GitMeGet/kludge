@@ -77,10 +77,14 @@ public class AlarmDetails {
         return json;
     }
 
+
+
     //
     public void registerAlarmIntent(Context context, int requestCode){
 
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+        alarmIntent.putExtra("alarmId", getId());
+
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int)getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -97,6 +101,7 @@ public class AlarmDetails {
             case CHECK_ALARM:
                 break;
             case SNOOZE_ALARM:
+                alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + 100000, pendingIntent);
                 break;
         }
 
@@ -108,6 +113,18 @@ public class AlarmDetails {
     }
     public boolean isOnState() {return bOnState;}
     public long getTimeInMillis() {return lTimeInMillis;}
+    public int getHour() {
+        return nHour;
+    }
+
+    public int getMin() {
+        return nMin;
+    }
+
+    public String getName() {
+        return strName;
+    }
+
 
     //setters
     public void setName(String strName) {

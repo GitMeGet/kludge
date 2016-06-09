@@ -1,8 +1,6 @@
 package com.kludge.wakemeup;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,19 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class MainAlarm extends AppCompatActivity {
 
     //keys
     static final int ID_ADD_ALARM = 100;
+    static final int ID_EDIT_ALARM = 101;
 
     static final int ID_CONTEXT_EDIT = 200;
     static final int ID_CONTEXT_DELETE= 201;
@@ -89,14 +85,25 @@ public class MainAlarm extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item){
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        AlarmDetails alarm = alarms.get(info.position);
 
         switch(item.getItemId()){
             case ID_CONTEXT_EDIT:
                 //todo: create edit alarm functionality
+
+                // unregister alarm with alarm manager
+                alarm.registerAlarmIntent(this, AlarmDetails.CANCEL_ALARM);
+
+                Intent addAlarm = new Intent(getApplicationContext(), InputAlarm.class);
+                long alarmId = alarm.getId();
+                addAlarm.putExtra("alarmId", alarmId);
+                startActivityForResult(addAlarm, ID_EDIT_ALARM);
+
+                // register new alarm with alarm manager
+
                 return super.onContextItemSelected(item);
             case ID_CONTEXT_DELETE:
                 //todo: remove alarm pending intent!
-                AlarmDetails alarm = alarms.get(info.position);
                 alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.CANCEL_ALARM);
                 alarmAdapter.remove(alarm);
                 return super.onContextItemSelected(item);
@@ -126,6 +133,23 @@ public class MainAlarm extends AppCompatActivity {
         alarmAdapter.notifyDataSetChanged();
     }
 
+    private void editAlarm(Intent data){
+        long alarmId = data.getLongExtra("alarmId", -1);
+        AlarmDetails oldAlarm = AlarmLab.get(this).getAlarmDetails(alarmId);
+
+        oldAlarm.setTime(data.getIntExtra("hour", 0),data.getIntExtra("minute", 0) );
+        oldAlarm.setName(data.getStringExtra("alarm_name"));
+
+        oldAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
+
+        //save the alarms
+        AlarmLab.get(getApplicationContext()).saveAlarms();
+
+        alarmAdapter.notifyDataSetChanged();
+    }
+
+
+
     //show the timePicker dialog inside a DialogFragment
     private void showTimePickerDialog(){
         DialogFragment newFrag = new TimePickerFragment();
@@ -138,6 +162,9 @@ public class MainAlarm extends AppCompatActivity {
             switch(requestCode){
                 case ID_ADD_ALARM:
                     addAlarm(data);
+                    break;
+                case ID_EDIT_ALARM:
+                    editAlarm(data);
                     break;
             }
         }

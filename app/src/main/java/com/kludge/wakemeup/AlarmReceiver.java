@@ -15,7 +15,11 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("alarm_received", "going to start AlarmWake");
+
+        long alarmId = intent.getLongExtra("alarmId", 0);
+
         Intent startAlarm = new Intent(context, AlarmWake.class);
+        startAlarm.putExtra("alarmId", alarmId);
         startAlarm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         context.startActivity(startAlarm);

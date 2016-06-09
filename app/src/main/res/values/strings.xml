@@ -8,7 +8,7 @@
     <string name="empty_alarm_field">Enter Alarm Name</string>
 
     //BUTTONS
-    <string name="button_add">Add</string>
     <string name="button_dismiss">Dismiss</string>
+    <string name="button_snooze">Snooze</string>
 
 </resources>

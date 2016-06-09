@@ -3,10 +3,7 @@ package com.kludge.wakemeup;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Environment;
 import android.os.IBinder;
-
-import java.io.File;
 
 public class RingtoneService extends Service {
 
@@ -33,6 +30,9 @@ public class RingtoneService extends Service {
 
 
         alarm_ringer = MediaPlayer.create(getApplicationContext(), R.raw.souls);
+
+        alarm_ringer.setLooping(true);
+
         alarm_ringer.start();
 
 
