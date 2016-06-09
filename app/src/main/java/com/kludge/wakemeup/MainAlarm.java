@@ -1,5 +1,8 @@
 package com.kludge.wakemeup;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,8 +20,10 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainAlarm extends AppCompatActivity {
 
@@ -29,19 +34,22 @@ public class MainAlarm extends AppCompatActivity {
     static final int ID_CONTEXT_EDIT = 200;
     static final int ID_CONTEXT_DELETE= 201;
 
-    //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
-    static ArrayList<AlarmDetails> alarms;
+    static ArrayList<AlarmDetails> alarms; //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
+    static AlarmAdapter alarmAdapter; //arrayAdapter for the ListView
+    static AlarmManager alarmManager; //alarmManager
 
-    //arrayAdapter for the ListView
-    static AlarmAdapter alarmAdapter;
+    static PendingIntent pendingIntent; //pendingIntent for adding to alarmManager
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alarm);
 
-        // retrieve alarms from JSON
-        alarms = AlarmLab.get(this).getAlarms();
+        //initialise alarmManager
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        // initialise alarms ArrayList if empty, else load from FILE
+        alarms = AlarmLab.get(getApplicationContext()).getAlarms();
 
         //initiates AlarmAdapter for ListView, (context, layout, strArray)
         alarmAdapter = new AlarmAdapter(this, alarms);
@@ -58,7 +66,7 @@ public class MainAlarm extends AppCompatActivity {
         buttAddAlarm.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
                 //opens add alarm activity
-                requestAddAlarm(view);
+                requestAddAlarm();
             }
         });
 
@@ -80,11 +88,14 @@ public class MainAlarm extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item){
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
         switch(item.getItemId()){
             case ID_CONTEXT_EDIT:
-                return true;
+                //todo: create edit alarm functionality
+                return super.onContextItemSelected(item);
             case ID_CONTEXT_DELETE:
-                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item; //FIX THIS SHIT
                 alarmAdapter.remove(alarms.get(info.position));
                 return super.onContextItemSelected(item);
 
@@ -93,20 +104,40 @@ public class MainAlarm extends AppCompatActivity {
     }
 
     //opens up activity to addAlarm
-    private void requestAddAlarm(View view) {
+    private void requestAddAlarm() {
         //sets up intent to inputAlarm
         Intent addAlarm = new Intent(getApplicationContext(), InputAlarm.class);
         startActivityForResult(addAlarm, ID_ADD_ALARM);
     }
 
-    //adds alarm to the alarms ArrayList
+    //adds alarm to the alarms ArrayList, calls addAlarmIntent to setup pendingIntent
     private void addAlarm(Intent data){
         AlarmDetails newAlarm = new AlarmDetails(data.getIntExtra("hour", 0),
                 data.getIntExtra("minute", 0),
                 data.getStringExtra("alarm_name"));
 
+        addAlarmIntent(newAlarm);
+
         alarms.add(newAlarm);
+
+        AlarmLab.get(getApplicationContext()).saveAlarms();
+
         alarmAdapter.notifyDataSetChanged();
+    }
+
+    //sends pending intent to alarm service
+    //pre-cond: alarmDetail object
+    //post-cond: sends pendingIntent to alarmManager
+    private void addAlarmIntent(AlarmDetails alarm){
+
+        //setup alarmRinger intent to call alarmReceiver
+        Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+
+        //todo: change to AlarmWake activity w/ Service
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), (int)alarm.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //set pendingIntent at alarmTime
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
     }
 
     //show the timePicker dialog inside a DialogFragment
@@ -126,11 +157,13 @@ public class MainAlarm extends AppCompatActivity {
         }
     }
 
+    // saves arraylist of alarms to database
     @Override
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
 
         //save info by doing eg. outState.putString("key", varName), outState.putFloatArray("key",..
+        AlarmLab.get(getApplicationContext()).saveAlarms();
     }
 
     @Override
@@ -140,11 +173,9 @@ public class MainAlarm extends AppCompatActivity {
         //restore info by taking it out eg. var = savedInstanceState.getString("key");
     }
 
-    // saves arraylist of alarms to database
     @Override
     protected void onPause() {
         super.onPause();
-        AlarmLab.get(this).saveAlarms();
     }
 
 }
@@ -171,16 +202,26 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
 
         //gets the switch widget for the View
         Switch aSwitch = (Switch) convertView.findViewById(R.id.alarm_on_state);
+        aSwitch.setChecked(MainAlarm.alarms.get(pos).isOnState());         //if the alarm state was on, set aSwitch accordingly
 
-        //if the alarm state was on, set aSwitch accordingly
-
-
-        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        aSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onClick(View v) {
                 alarm.toggleOnState();
 
-                notifyDataSetChanged();
+                //todo: change to AlarmWake activity w/ Service 2
+                Intent alarmIntent = new Intent(getContext(), AlarmReceiver.class);
+
+                //todo: whose pendingIntent?
+                MainAlarm.pendingIntent = PendingIntent.getBroadcast(getContext(), (int)alarm.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                //checks the pendingIntent for the alarm
+                if(alarm.isOnState())
+                    MainAlarm.alarmManager.set(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), MainAlarm.pendingIntent); //reset just in case? todo: check if needed
+                else //cancel the alarm
+                    MainAlarm.alarmManager.cancel(MainAlarm.pendingIntent);
+
+                 notifyDataSetChanged();
             }
         });
 

@@ -9,4 +9,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.kludge.wakemeup.AlarmWake">
 
+    <Button android:id="@+id/butt_dismiss_alarm"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:text="@string/button_dismiss" />
+
 </RelativeLayout>

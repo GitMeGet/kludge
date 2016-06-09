@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kludge.wakemeup"
-    android:versionCode="1"
-    android:versionName="0.1">
+    package="com.kludge.wakemeup">
 
     <application
         android:allowBackup="true"
@@ -22,8 +20,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".AlarmWake" />
-        <activity android:name=".InputAlarm"></activity>
+        <activity android:name=".InputAlarm" />
+
+        <service
+            android:name=".RingtoneService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <receiver android:name=".AlarmReceiver" />
     </application>
 
 </manifest>

@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">Wake Me Up</string>
-    <string name="button_add">Add</string>
-    <string name="alarm_name">ALARM_NAME</string>
-    <string name="alarm_time"></string>
-    <string name="empty_alarm_field">Enter Alarm Name</string>
     <string name="title_activity_add_alarm">AddAlarm</string>
     <string name="action_settings">Settings</string>
+
+    <string name="alarm_name">ALARM_NAME</string>
+    <string name="alarm_time">0</string>
+    <string name="empty_alarm_field">Enter Alarm Name</string>
+
+    //BUTTONS
+    <string name="button_add">Add</string>
+    <string name="button_dismiss">Dismiss</string>
+
 </resources>
