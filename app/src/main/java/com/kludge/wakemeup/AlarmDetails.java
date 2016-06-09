@@ -86,7 +86,10 @@ public class AlarmDetails {
 
         switch(requestCode){
             case ADD_ALARM:
-                alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis(), pendingIntent);
+                if(getTimeInMillis() < System.currentTimeMillis())
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis()+ (long)8.64e+7, pendingIntent);
+                else
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis(), pendingIntent);
                 break;
             case CANCEL_ALARM:
                 alarmManager.cancel(pendingIntent);
