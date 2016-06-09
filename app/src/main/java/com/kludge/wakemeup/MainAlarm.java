@@ -29,14 +29,13 @@ public class MainAlarm extends AppCompatActivity {
 
     //keys
     static final int ID_ADD_ALARM = 100;
-    static final int ID_RESULT_OK = 666;
 
     static final int ID_CONTEXT_EDIT = 200;
     static final int ID_CONTEXT_DELETE= 201;
 
     static ArrayList<AlarmDetails> alarms; //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
     static AlarmAdapter alarmAdapter; //arrayAdapter for the ListView
-    static AlarmManager alarmManager; //alarmManager
+    //static AlarmManager alarmManager; //alarmManager
 
     static PendingIntent pendingIntent; //pendingIntent for adding to alarmManager
 
@@ -46,7 +45,7 @@ public class MainAlarm extends AppCompatActivity {
         setContentView(R.layout.activity_main_alarm);
 
         //initialise alarmManager
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         // initialise alarms ArrayList if empty, else load from FILE
         alarms = AlarmLab.get(getApplicationContext()).getAlarms();
@@ -96,9 +95,11 @@ public class MainAlarm extends AppCompatActivity {
                 //todo: create edit alarm functionality
                 return super.onContextItemSelected(item);
             case ID_CONTEXT_DELETE:
-                alarmAdapter.remove(alarms.get(info.position));
+                //todo: remove alarm pending intent!
+                AlarmDetails alarm = alarms.get(info.position);
+                alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.CANCEL_ALARM);
+                alarmAdapter.remove(alarm);
                 return super.onContextItemSelected(item);
-
         }
         return false;
     }
@@ -116,28 +117,13 @@ public class MainAlarm extends AppCompatActivity {
                 data.getIntExtra("minute", 0),
                 data.getStringExtra("alarm_name"));
 
-        addAlarmIntent(newAlarm);
-
+        newAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
         alarms.add(newAlarm);
 
+        //save the alarms
         AlarmLab.get(getApplicationContext()).saveAlarms();
 
         alarmAdapter.notifyDataSetChanged();
-    }
-
-    //sends pending intent to alarm service
-    //pre-cond: alarmDetail object
-    //post-cond: sends pendingIntent to alarmManager
-    private void addAlarmIntent(AlarmDetails alarm){
-
-        //setup alarmRinger intent to call alarmReceiver
-        Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
-
-        //todo: change to AlarmWake activity w/ Service
-        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), (int)alarm.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        //set pendingIntent at alarmTime
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
     }
 
     //show the timePicker dialog inside a DialogFragment
@@ -148,7 +134,7 @@ public class MainAlarm extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(resultCode == ID_RESULT_OK){
+        if(resultCode == RESULT_OK){
             switch(requestCode){
                 case ID_ADD_ALARM:
                     addAlarm(data);
@@ -209,17 +195,11 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
             public void onClick(View v) {
                 alarm.toggleOnState();
 
-                //todo: change to AlarmWake activity w/ Service 2
-                Intent alarmIntent = new Intent(getContext(), AlarmReceiver.class);
-
-                //todo: whose pendingIntent?
-                MainAlarm.pendingIntent = PendingIntent.getBroadcast(getContext(), (int)alarm.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
                 //checks the pendingIntent for the alarm
                 if(alarm.isOnState())
-                    MainAlarm.alarmManager.set(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), MainAlarm.pendingIntent); //reset just in case? todo: check if needed
+                    alarm.registerAlarmIntent(getContext(), AlarmDetails.ADD_ALARM);
                 else //cancel the alarm
-                    MainAlarm.alarmManager.cancel(MainAlarm.pendingIntent);
+                    alarm.registerAlarmIntent(getContext(), AlarmDetails.CANCEL_ALARM);
 
                  notifyDataSetChanged();
             }

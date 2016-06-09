@@ -31,7 +31,7 @@ public class InputAlarm extends AppCompatActivity {
         data.putExtra("hour", viewTimePicker.getHour());
         data.putExtra("minute", viewTimePicker.getMinute());
 
-        setResult(MainAlarm.ID_RESULT_OK, data);
+        setResult(MainAlarm.RESULT_OK, data);
         finish();
     }
 }

@@ -1,5 +1,10 @@
 package com.kludge.wakemeup;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +23,12 @@ public class AlarmDetails {
 
     //create alarm ID
     private long mId;
+
+    //request codes
+    public static final int ADD_ALARM = 1;
+    public static final int CANCEL_ALARM = 2;
+    public static final int CHECK_ALARM = 3;
+    public static final int SNOOZE_ALARM = 4;
 
     // JSON keys
     private static final String JSON_HOUR = "hour";
@@ -64,6 +75,28 @@ public class AlarmDetails {
         json.put(JSON_ID, mId);
 
         return json;
+    }
+
+    //
+    public void registerAlarmIntent(Context context, int requestCode){
+
+        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int)getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        switch(requestCode){
+            case ADD_ALARM:
+                alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis(), pendingIntent);
+                break;
+            case CANCEL_ALARM:
+                alarmManager.cancel(pendingIntent);
+                break;
+            case CHECK_ALARM:
+                break;
+            case SNOOZE_ALARM:
+                break;
+        }
+
     }
 
     //getters
