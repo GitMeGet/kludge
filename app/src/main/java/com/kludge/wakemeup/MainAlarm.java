@@ -1,12 +1,16 @@
 package com.kludge.wakemeup;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,7 +31,7 @@ public class MainAlarm extends AppCompatActivity {
     static final int ID_EDIT_ALARM = 101;
 
     static final int ID_CONTEXT_EDIT = 200;
-    static final int ID_CONTEXT_DELETE= 201;
+    static final int ID_CONTEXT_DELETE = 201;
 
     static ArrayList<AlarmDetails> alarms; //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
     static AlarmAdapter alarmAdapter; //arrayAdapter for the ListView
@@ -35,10 +39,49 @@ public class MainAlarm extends AppCompatActivity {
 
     static PendingIntent pendingIntent; //pendingIntent for adding to alarmManager
 
+    // for notifications
+    private static Resources r;
+    private static NotificationManager notificationManager;
+
+    private void createNotification() {
+
+        Intent i = new Intent(this, MainAlarm.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        String time = "No Alarm Set";
+        String hTA = "";
+
+        AlarmDetails earliestAlarm = AlarmLab.get(this).getEarliestAlarm();
+        if (earliestAlarm != null){
+            time = "Next Alarm: " + earliestAlarm.getHour() + ":" + earliestAlarm.getMin();
+
+            double hoursToAlarm = (earliestAlarm.getTimeInMillis() - System.currentTimeMillis())*(2.77778e-7);
+            hTA = "Hours till wake: " + String.format("%.2f",hoursToAlarm);
+
+        }
+
+        mBuilder.setContentTitle(time)
+                .setContentText(hTA)
+                .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+                // persistent
+                .setOngoing(true)
+                .setContentIntent(pi);
+
+        Notification notification = mBuilder.build();
+
+        notificationManager.notify(0, notification);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alarm);
+
+        // for notifications
+        r = getResources();
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        createNotification();
 
         //initialise alarmManager
         //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -59,7 +102,7 @@ public class MainAlarm extends AppCompatActivity {
         FloatingActionButton buttAddAlarm = (FloatingActionButton) findViewById(R.id.float_add_alarm);
         assert buttAddAlarm != null;
         buttAddAlarm.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view){
+            public void onClick(View view) {
                 //opens add alarm activity
                 requestAddAlarm();
             }
@@ -70,24 +113,24 @@ public class MainAlarm extends AppCompatActivity {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo){
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
 
-        switch(view.getId()){
+        switch (view.getId()) {
             case R.id.list_alarms:
-                menu.add(0, ID_CONTEXT_EDIT, 0 , "Edit");
+                menu.add(0, ID_CONTEXT_EDIT, 0, "Edit");
                 menu.add(0, ID_CONTEXT_DELETE, 0, "Delete"); //(?, key, order, text)
                 break;
         }
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item){
+    public boolean onContextItemSelected(MenuItem item) {
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         AlarmDetails alarm = alarms.get(info.position);
 
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case ID_CONTEXT_EDIT:
                 //todo: create edit alarm functionality
 
@@ -119,7 +162,7 @@ public class MainAlarm extends AppCompatActivity {
     }
 
     //adds alarm to the alarms ArrayList, calls addAlarmIntent to setup pendingIntent
-    private void addAlarm(Intent data){
+    private void addAlarm(Intent data) {
         AlarmDetails newAlarm = new AlarmDetails(data.getIntExtra("hour", 0),
                 data.getIntExtra("minute", 0),
                 data.getStringExtra("alarm_name"));
@@ -133,11 +176,11 @@ public class MainAlarm extends AppCompatActivity {
         alarmAdapter.notifyDataSetChanged();
     }
 
-    private void editAlarm(Intent data){
+    private void editAlarm(Intent data) {
         long alarmId = data.getLongExtra("alarmId", -1);
         AlarmDetails oldAlarm = AlarmLab.get(this).getAlarmDetails(alarmId);
 
-        oldAlarm.setTime(data.getIntExtra("hour", 0),data.getIntExtra("minute", 0) );
+        oldAlarm.setTime(data.getIntExtra("hour", 0), data.getIntExtra("minute", 0));
         oldAlarm.setName(data.getStringExtra("alarm_name"));
 
         oldAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
@@ -149,17 +192,16 @@ public class MainAlarm extends AppCompatActivity {
     }
 
 
-
     //show the timePicker dialog inside a DialogFragment
-    private void showTimePickerDialog(){
+    private void showTimePickerDialog() {
         DialogFragment newFrag = new TimePickerFragment();
         newFrag.show(getSupportFragmentManager(), "timePicker"); //requires instance of a FragmentManager, + unique tag for this fragment
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(resultCode == RESULT_OK){
-            switch(requestCode){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case ID_ADD_ALARM:
                     addAlarm(data);
                     break;
@@ -172,7 +214,7 @@ public class MainAlarm extends AppCompatActivity {
 
     // saves arraylist of alarms to database
     @Override
-    protected void onSaveInstanceState(Bundle outState){
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         //save info by doing eg. outState.putString("key", varName), outState.putFloatArray("key",..
@@ -180,7 +222,7 @@ public class MainAlarm extends AppCompatActivity {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState){
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         //restore info by taking it out eg. var = savedInstanceState.getString("key");
@@ -189,24 +231,25 @@ public class MainAlarm extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        AlarmLab.get(getApplicationContext()).saveAlarms();
     }
 
 }
 
 //AlarmAdapter for the ListView
 class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
-    public AlarmAdapter(Context context, ArrayList<AlarmDetails> alarmList){
+    public AlarmAdapter(Context context, ArrayList<AlarmDetails> alarmList) {
         super(context, 0, alarmList);
     }
 
     //returns actual View to be displayed as row within the alarm ListView
     @Override
-    public View getView(int pos, View convertView, ViewGroup parent){
+    public View getView(int pos, View convertView, ViewGroup parent) {
         //retrieves alarms array for this position
         final AlarmDetails alarm = getItem(pos);
 
         //check if existing view is being reused, else just inflate the view with custom alarm_list_item xml
-        if(convertView == null)
+        if (convertView == null)
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.alarm_list_item, parent, false);
 
         //lookup the Views to be populated, ie. alarm name and alarm time
@@ -223,18 +266,18 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
                 alarm.toggleOnState();
 
                 //checks the pendingIntent for the alarm
-                if(alarm.isOnState())
+                if (alarm.isOnState())
                     alarm.registerAlarmIntent(getContext(), AlarmDetails.ADD_ALARM);
                 else //cancel the alarm
                     alarm.registerAlarmIntent(getContext(), AlarmDetails.CANCEL_ALARM);
 
-                 notifyDataSetChanged();
+                notifyDataSetChanged();
             }
         });
 
         //updates the Views with the data
         alarmName.setText(alarm.strName);
-        alarmTime.setText(alarm.nHour+":"+alarm.nMin+(alarm.bOnState?" ON":" OFF")); //CHANGE THIS, ON OFF JUST TO TEST ONLY
+        alarmTime.setText(alarm.nHour + ":" + alarm.nMin + (alarm.bOnState ? " ON" : " OFF")); //CHANGE THIS, ON OFF JUST TO TEST ONLY
 
         //return completed view to render on screen
         return convertView;

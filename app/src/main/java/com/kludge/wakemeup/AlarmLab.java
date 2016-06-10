@@ -76,6 +76,21 @@ public class AlarmLab {
         return null;
     }
 
+    // retrieve earliest alarm
+    public AlarmDetails getEarliestAlarm(){
+        // if there is at least 1 alarm
+        if (mAlarms.get(0) != null) {
+            AlarmDetails min = mAlarms.get(0);
+            for (AlarmDetails a : mAlarms){
+                if (a.bOnState && min.getTimeInMillis() > a.getTimeInMillis()){
+                    min = a;
+                }
+            }
+            return min;
+        }
+        return null;
+    }
+
     public void addAlarm(AlarmDetails a) {
         mAlarms.add(a);
     }

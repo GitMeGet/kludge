@@ -126,6 +126,7 @@ public class AlarmDetails {
     }
 
 
+
     //setters
     public void setName(String strName) {
         this.strName = strName;

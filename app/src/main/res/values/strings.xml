@@ -11,4 +11,7 @@
     <string name="button_dismiss">Dismiss</string>
     <string name="button_snooze">Snooze</string>
 
+    //NOTIFICATION
+    <string name="ticker_title">Next Alarm at: </string>
+
 </resources>
