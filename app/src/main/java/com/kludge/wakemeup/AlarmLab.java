@@ -26,10 +26,10 @@ public class AlarmLab {
         mAppContext = appContext;
 
         mSerializer = new AlarmJSONSerializer(mAppContext, FILENAME);
-        try{
+        try {
             // loads alarms from database
             mAlarms = mSerializer.loadAlarms();
-        } catch(Exception e){
+        } catch (Exception e) {
             mAlarms = new ArrayList<AlarmDetails>();
             Log.e(TAG, "Error loading alarms: ", e);
         }
@@ -77,15 +77,25 @@ public class AlarmLab {
     }
 
     // retrieve earliest alarm
-    public AlarmDetails getEarliestAlarm(){
+    public AlarmDetails getEarliestAlarm() {
         // if there is at least 1 alarm
-        if (mAlarms.get(0) != null) {
-            AlarmDetails min = mAlarms.get(0);
-            for (AlarmDetails a : mAlarms){
-                if (a.bOnState && min.getTimeInMillis() > a.getTimeInMillis()){
+        if (mAlarms.size() > 0) {
+            AlarmDetails min = null;
+
+            for (AlarmDetails a : mAlarms) {
+                if (a.isOnState()) {
                     min = a;
                 }
             }
+
+            if (min != null) {
+                for (AlarmDetails a : mAlarms) {
+                    if (a.bOnState && min.getTimeInMillis() > a.getTimeInMillis()) {
+                        min = a;
+                    }
+                }
+            }
+
             return min;
         }
         return null;
