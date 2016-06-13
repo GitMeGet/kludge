@@ -1,11 +1,20 @@
 <resources>
     <string name="app_name">Wake Me Up</string>
+    <string name="input_alarm_name">Alarm Settings</string>
     <string name="title_activity_add_alarm">AddAlarm</string>
     <string name="action_settings">Settings</string>
 
+    //ALARM VIEWS
     <string name="alarm_name">ALARM_NAME</string>
     <string name="alarm_time">0</string>
     <string name="empty_alarm_field">Enter Alarm Name</string>
+
+    //PREFERENCES
+    <string name="title_general">General</string>
+    <string name="title_alarm_name">Alarm Name</string>
+    <string name="summary_alarm_name">Enter the name of the alarm.</string>
+    <string name="title_alarm_repeat">Repeat</string>
+    <string name="summary_alarm_repeat">If checked, alarm will be reset after activated.</string>
 
     //BUTTONS
     <string name="button_dismiss">Dismiss</string>

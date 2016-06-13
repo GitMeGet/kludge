@@ -15,11 +15,11 @@ import java.util.Calendar;
  * yes
  */
 public class AlarmDetails {
-    public int nHour;
-    public int nMin;
-    public long lTimeInMillis;
-    public String strName;
-    public boolean bOnState;
+    private int nHour;
+    private int nMin;
+    private long lTimeInMillis;
+    private String strName;
+    private boolean bOnState;
 
     //create alarm ID
     private long mId;

@@ -35,9 +35,6 @@ public class MainAlarm extends AppCompatActivity {
 
     static ArrayList<AlarmDetails> alarms; //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
     static AlarmAdapter alarmAdapter; //arrayAdapter for the ListView
-    //static AlarmManager alarmManager; //alarmManager
-
-    static PendingIntent pendingIntent; //pendingIntent for adding to alarmManager
 
     // for notifications
     private static Resources r;
@@ -143,7 +140,6 @@ public class MainAlarm extends AppCompatActivity {
                 startActivityForResult(addAlarm, ID_EDIT_ALARM);
 
                 // register new alarm with alarm manager
-
                 return super.onContextItemSelected(item);
             case ID_CONTEXT_DELETE:
                 //todo: remove alarm pending intent!
@@ -253,11 +249,11 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.alarm_list_item, parent, false);
 
         //lookup the Views to be populated, ie. alarm name and alarm time
-        TextView alarmName = (TextView) convertView.findViewById(R.id.alarm_name);
-        TextView alarmTime = (TextView) convertView.findViewById(R.id.alarm_time);
+        TextView alarmName = (TextView) convertView.findViewById(R.id.view_alarm_name);
+        TextView alarmTime = (TextView) convertView.findViewById(R.id.view_alarm_time);
 
         //gets the switch widget for the View
-        Switch aSwitch = (Switch) convertView.findViewById(R.id.alarm_on_state);
+        Switch aSwitch = (Switch) convertView.findViewById(R.id.view_alarm_on_state);
         aSwitch.setChecked(MainAlarm.alarms.get(pos).isOnState());         //if the alarm state was on, set aSwitch accordingly
 
         aSwitch.setOnClickListener(new View.OnClickListener() {
@@ -276,8 +272,8 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         });
 
         //updates the Views with the data
-        alarmName.setText(alarm.strName);
-        alarmTime.setText(alarm.nHour + ":" + alarm.nMin + (alarm.bOnState ? " ON" : " OFF")); //CHANGE THIS, ON OFF JUST TO TEST ONLY
+        alarmName.setText(alarm.getName());
+        alarmTime.setText(alarm.getHour() + ":" + alarm.getMin() + (alarm.isOnState() ? " ON" : " OFF")); //CHANGE THIS, ON OFF JUST TO TEST ONLY
 
         //return completed view to render on screen
         return convertView;
