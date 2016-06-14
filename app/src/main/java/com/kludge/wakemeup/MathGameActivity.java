@@ -22,7 +22,7 @@ public class MathGameActivity extends Activity {
     Button buttonSubmit;
 
     int currentScore = 0;
-    int level = 2;
+    int level = 1;
     int numCorrect = 0;
     int totalCorrect = 3;
 
@@ -44,7 +44,7 @@ public class MathGameActivity extends Activity {
         // get level from AlarmDetails
         // get totalCorrect from AlarmDetails
 
-        textNumCorrect.setText("0");
+        textNumCorrect.setText("" + numCorrect + "/" + totalCorrect);
 
         buttonSubmit.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -59,7 +59,7 @@ public class MathGameActivity extends Activity {
     private void setQuestion(){
 
         Random r = new Random();
-        int numberRange = (int) Math.pow(10, level);
+        int numberRange = (int) Math.pow(10, level + 1);
         int operandA = r.nextInt(numberRange);
         int operandB = r.nextInt(numberRange);
         operandA++; //ensure non-zero
@@ -76,9 +76,16 @@ public class MathGameActivity extends Activity {
                 correctAnswer = operandA - operandB;
                 break;
             case '*':
+                numberRange = (int) Math.pow(10,level);
+                operandA = r.nextInt(numberRange);
+                operandB = r.nextInt(numberRange);
                 correctAnswer = operandA * operandB;
                 break;
             case '/':
+                numberRange = (int) Math.pow(10,level);
+                operandA = r.nextInt(numberRange);
+                operandB = r.nextInt(numberRange);
+                operandB++; // operandB can't be zero
                 correctAnswer = operandA;
                 operandA = operandA * operandB;
                 break;
@@ -92,7 +99,14 @@ public class MathGameActivity extends Activity {
 
     private void updateScoreAndLevel(String answerGiven){
 
-        if(isCorrect(Integer.parseInt(answerGiven))){
+        int answer = Integer.MIN_VALUE;
+
+        try {
+            answer = Integer.parseInt(answerGiven);
+        } catch(NumberFormatException e){
+        }
+
+        if(isCorrect(answer)){
             numCorrect++;
             setQuestion();
             inputAnswer.setText("");
@@ -101,11 +115,13 @@ public class MathGameActivity extends Activity {
         else{
             currentScore = 0;
             numCorrect = 0;
+            inputAnswer.setText("");
         }
 
         textNumCorrect.setText("" + numCorrect + "/" + totalCorrect);
 
         if (numCorrect == totalCorrect ){
+            setResult(AlarmWake.MATH_GAME);
             finish();
         }
 
