@@ -25,12 +25,15 @@
         </activity>
 
         <activity android:name=".AlarmWake" />
-        <activity android:name=".InputAlarm" />
+        <activity
+            android:name=".InputAlarm"
+            android:label="@string/input_alarm_name"
+            android:parentActivityName=".MainAlarm"/>
 
         <service
             android:name=".RingtoneService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"/>
 
         <receiver android:name=".AlarmReceiver" />
 

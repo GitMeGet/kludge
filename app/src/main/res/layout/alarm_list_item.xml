@@ -8,20 +8,20 @@
     android:paddingTop="10dp"
     android:longClickable="true">
 
-    <TextView android:id="@+id/alarm_name"
+    <TextView android:id="@+id/view_alarm_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:text="@string/alarm_name"/>
 
-    <TextView android:id="@+id/alarm_time"
+    <TextView android:id="@+id/view_alarm_time"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_below="@id/alarm_name"
+        android:layout_below="@id/view_alarm_name"
         android:text="25:00" />
 
-    <Switch android:id="@+id/alarm_on_state"
+    <Switch android:id="@+id/view_alarm_on_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"/>

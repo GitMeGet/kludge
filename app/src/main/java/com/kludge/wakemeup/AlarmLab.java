@@ -78,6 +78,7 @@ public class AlarmLab {
 
     // retrieve earliest alarm
     public AlarmDetails getEarliestAlarm() {
+        /*
         // if there is at least 1 alarm
         if (mAlarms.size() > 0) {
             AlarmDetails min = null;
@@ -90,14 +91,21 @@ public class AlarmLab {
 
             if (min != null) {
                 for (AlarmDetails a : mAlarms) {
-                    if (a.bOnState && min.getTimeInMillis() > a.getTimeInMillis()) {
+                    if (a.isOnState() && min.getTimeInMillis() > a.getTimeInMillis()) {
                         min = a;
                     }
                 }
             }
+            if (mAlarms.get(0) != null) {
+            AlarmDetails min = mAlarms.get(0);
+            for (AlarmDetails a : mAlarms){
+                if (a.isOnState() && min.getTimeInMillis() > a.getTimeInMillis()){
+                    min = a;
+                }
+            }
 
             return min;
-        }
+        }*/
         return null;
     }
 
