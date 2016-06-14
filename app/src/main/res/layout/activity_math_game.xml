@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+    >
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Score"
+        android:id="@+id/game_text_score"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Correct/Total"
+        android:id="@+id/game_text_numCorrect"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/game_text_operandB"
+        android:layout_alignEnd="@+id/game_text_operandB"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="OperandA"
+        android:id="@+id/game_text_operandA"
+        android:layout_below="@+id/game_text_score"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="101dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Operator"
+        android:id="@+id/game_text_operator"
+        android:layout_alignTop="@+id/game_text_operandA"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="OperandB"
+        android:id="@+id/game_text_operandB"
+        android:layout_alignTop="@+id/game_text_operator"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/game_editText_inputAnswer"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/game_text_operator"
+        android:layout_toStartOf="@+id/game_text_operator"
+        android:hint="Enter answer here"
+        android:gravity="center"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit Answer"
+        android:id="@+id/game_button_submit"
+        android:layout_alignTop="@+id/game_editText_inputAnswer"
+        android:layout_toRightOf="@+id/game_editText_inputAnswer"
+        android:layout_toEndOf="@+id/game_editText_inputAnswer"/>
+
+</RelativeLayout>

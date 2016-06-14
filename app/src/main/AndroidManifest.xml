@@ -25,10 +25,14 @@
         </activity>
 
         <activity android:name=".AlarmWake" />
+
         <activity
             android:name=".InputAlarm"
             android:label="@string/input_alarm_name"
             android:parentActivityName=".MainAlarm"/>
+
+        <activity android:name=".MathGameActivity"
+            android:parentActivityName=".AlarmWake"/>
 
         <service
             android:name=".RingtoneService"
