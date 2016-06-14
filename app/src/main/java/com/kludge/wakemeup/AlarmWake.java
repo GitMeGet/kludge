@@ -3,6 +3,7 @@ package com.kludge.wakemeup;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,14 @@ public class AlarmWake extends AppCompatActivity {
         long alarmId = getIntent().getLongExtra("alarmId", 0);
         final AlarmDetails alarm = AlarmLab.get(c).getAlarmDetails(alarmId);
 
+        // wake_lock
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK |
+                //  force the screen and/or keyboard to turn on immediately, when the WakeLock is acquired
+                PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                "MyWakelockTag");
+        wakeLock.acquire();
+
         //make it RING
         ringService = new Intent(this, RingtoneService.class);
         startService(ringService);
@@ -31,6 +40,10 @@ public class AlarmWake extends AppCompatActivity {
             public void onClick(View v) {
                 //cancel RingtoneService and PendingIntent
                 stopService(ringService);
+
+                // release wake_lock
+                wakeLock.release();
+
                 finish();
             }
         });
@@ -43,10 +56,19 @@ public class AlarmWake extends AppCompatActivity {
                 //cancel RingtoneService and PendingIntent
                 stopService(ringService);
 
+                // re-register snoozed alarm
                 alarm.registerAlarmIntent(c, AlarmDetails.SNOOZE_ALARM);
+
+                // release wake_lock
+                wakeLock.release();
 
                 finish();
             }
         });
+    }
+
+    // disables back button
+    @Override
+    public void onBackPressed() {
     }
 }

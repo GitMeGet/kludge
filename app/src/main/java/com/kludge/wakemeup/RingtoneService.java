@@ -1,7 +1,9 @@
 package com.kludge.wakemeup;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 
@@ -27,12 +29,19 @@ public class RingtoneService extends Service {
         //File sd = Environment.getExternalStorageDirectory();
         //String path = sd.getAbsolutePath() + "MH Song.wav";
 
+        // set volume to maximum
+        AudioManager am =
+                (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        am.setStreamVolume(
+                AudioManager.STREAM_MUSIC,
+                am.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+                0);
 
 
+        // play ringtone
         alarm_ringer = MediaPlayer.create(getApplicationContext(), R.raw.souls);
-
         alarm_ringer.setLooping(true);
-
         alarm_ringer.start();
 
 
@@ -42,6 +51,9 @@ public class RingtoneService extends Service {
     @Override
     public void onDestroy(){
         alarm_ringer.stop();
+
+        // reset original volume level
+
 
         super.onDestroy();
     }

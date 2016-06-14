@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -85,15 +86,27 @@ public class AlarmDetails {
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
         alarmIntent.putExtra("alarmId", getId());
 
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int)getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         switch(requestCode){
             case ADD_ALARM:
-                if(getTimeInMillis() < System.currentTimeMillis())
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis()+ (long)8.64e+7, pendingIntent);
-                else
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis(), pendingIntent);
+                if(getTimeInMillis() < System.currentTimeMillis()) {
+
+                    // update timeInMillis to one-day-later's time
+                    lTimeInMillis = getTimeInMillis() + (long) 8.64e+7;
+
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + (long) 8.64e+7, pendingIntent);
+                    else
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + (long) 8.64e+7, pendingIntent);
+                }
+                else {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis(), pendingIntent);
+                    else
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis(), pendingIntent);
+                }
                 break;
             case CANCEL_ALARM:
                 alarmManager.cancel(pendingIntent);
@@ -101,7 +114,10 @@ public class AlarmDetails {
             case CHECK_ALARM:
                 break;
             case SNOOZE_ALARM:
-                alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + 100000, pendingIntent);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + 100000, pendingIntent);
+                else
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + 100000, pendingIntent);
                 break;
         }
 

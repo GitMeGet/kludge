@@ -40,19 +40,20 @@ public class MainAlarm extends AppCompatActivity {
     static PendingIntent pendingIntent; //pendingIntent for adding to alarmManager
 
     // for notifications
+    private static Context mContext; // not sure if this is a good idea???
     private static Resources r;
     private static NotificationManager notificationManager;
 
-    private void createNotification() {
+    protected static void createNotification() {
 
-        Intent i = new Intent(this, MainAlarm.class);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
+        Intent i = new Intent(mContext, MainAlarm.class);
+        PendingIntent pi = PendingIntent.getActivity(mContext, 0, i, 0);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
         String time = "No Alarm Set";
         String hTA = "";
 
-        AlarmDetails earliestAlarm = AlarmLab.get(this).getEarliestAlarm();
+        AlarmDetails earliestAlarm = AlarmLab.get(mContext).getEarliestAlarm();
         if (earliestAlarm != null){
             time = "Next Alarm: " + earliestAlarm.getHour() + ":" + earliestAlarm.getMin();
 
@@ -79,6 +80,7 @@ public class MainAlarm extends AppCompatActivity {
         setContentView(R.layout.activity_main_alarm);
 
         // for notifications
+        mContext = this;
         r = getResources();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         createNotification();
@@ -173,6 +175,9 @@ public class MainAlarm extends AppCompatActivity {
         //save the alarms
         AlarmLab.get(getApplicationContext()).saveAlarms();
 
+        // update persistent notification
+        createNotification();
+
         alarmAdapter.notifyDataSetChanged();
     }
 
@@ -187,6 +192,9 @@ public class MainAlarm extends AppCompatActivity {
 
         //save the alarms
         AlarmLab.get(getApplicationContext()).saveAlarms();
+
+        // update persistent notification
+        createNotification();
 
         alarmAdapter.notifyDataSetChanged();
     }
@@ -242,6 +250,7 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         super(context, 0, alarmList);
     }
 
+
     //returns actual View to be displayed as row within the alarm ListView
     @Override
     public View getView(int pos, View convertView, ViewGroup parent) {
@@ -264,6 +273,9 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
             @Override
             public void onClick(View v) {
                 alarm.toggleOnState();
+
+                // update persistent notification
+                MainAlarm.createNotification();
 
                 //checks the pendingIntent for the alarm
                 if (alarm.isOnState())
