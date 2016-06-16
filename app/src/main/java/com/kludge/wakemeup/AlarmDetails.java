@@ -21,6 +21,7 @@ public class AlarmDetails {
     private long lTimeInMillis;
     private String strName;
     private boolean bOnState;
+    private boolean bRepeat;
 
     //create alarm ID
     private long mId;
@@ -38,8 +39,9 @@ public class AlarmDetails {
     private static final String JSON_ID = "id";
     private static final String JSON_STR_NAME = "strName";
     private static final String JSON_ON_STATE = "onState";
+    private static final String JSON_REPEAT = "repeat";
 
-    public AlarmDetails(int nHour, int nMin, String strName) {
+    public AlarmDetails(int nHour, int nMin, String strName, boolean bRepeat) {
         this.nHour = nHour;
         this.nMin = nMin;
 
@@ -50,6 +52,8 @@ public class AlarmDetails {
         this.lTimeInMillis = alarmTime.getTimeInMillis();
 
         this.strName = strName;
+        this.bRepeat = bRepeat;
+
         this.bOnState = true;
         this.mId = System.currentTimeMillis();
     }
@@ -61,6 +65,7 @@ public class AlarmDetails {
         lTimeInMillis = json.getLong(JSON_MILLIS);
         strName = json.getString(JSON_STR_NAME);
         bOnState = json.getBoolean(JSON_ON_STATE);
+        bRepeat = json.getBoolean(JSON_REPEAT);
         mId = json.getLong(JSON_ID);
     }
 
@@ -73,6 +78,7 @@ public class AlarmDetails {
         json.put(JSON_MILLIS, lTimeInMillis);
         json.put(JSON_STR_NAME, strName);
         json.put(JSON_ON_STATE, bOnState);
+        json.put(JSON_REPEAT, bRepeat);
         json.put(JSON_ID, mId);
 
         return json;
@@ -128,6 +134,7 @@ public class AlarmDetails {
         return mId;
     }
     public boolean isOnState() {return bOnState;}
+    public boolean isRepeat() {return bRepeat;}
     public long getTimeInMillis() {return lTimeInMillis;}
     public int getHour() {
         return nHour;
@@ -157,7 +164,9 @@ public class AlarmDetails {
         alarmTime.set(Calendar.SECOND, 0);
         this.lTimeInMillis = alarmTime.getTimeInMillis();
     }
+    public void setRepeat(boolean bRepeat) {this.bRepeat = !bRepeat;}
 
     public void toggleOnState() {bOnState = !bOnState;}
+
 
 }

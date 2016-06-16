@@ -137,14 +137,13 @@ public class MainAlarm extends AppCompatActivity {
                 alarm.registerAlarmIntent(this, AlarmDetails.CANCEL_ALARM);
 
                 Intent addAlarm = new Intent(getApplicationContext(), InputAlarm.class);
-                long alarmId = alarm.getId();
-                addAlarm.putExtra("alarmId", alarmId);
+                addAlarm.putExtra("alarmId", alarm.getId());
+
                 startActivityForResult(addAlarm, ID_EDIT_ALARM);
 
                 // register new alarm with alarm manager
                 return super.onContextItemSelected(item);
             case ID_CONTEXT_DELETE:
-                //todo: remove alarm pending intent!
                 alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.CANCEL_ALARM);
                 alarmAdapter.remove(alarm);
                 return super.onContextItemSelected(item);
@@ -163,7 +162,8 @@ public class MainAlarm extends AppCompatActivity {
     private void addAlarm(Intent data) {
         AlarmDetails newAlarm = new AlarmDetails(data.getIntExtra("hour", 0),
                 data.getIntExtra("minute", 0),
-                data.getStringExtra("alarm_name"));
+                data.getStringExtra("alarm_name"),
+                data.getBooleanExtra("alarm_repeat", false));
 
         newAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
         alarms.add(newAlarm);
@@ -178,11 +178,13 @@ public class MainAlarm extends AppCompatActivity {
     }
 
     private void editAlarm(Intent data) {
+
         long alarmId = data.getLongExtra("alarmId", -1);
         AlarmDetails oldAlarm = AlarmLab.get(this).getAlarmDetails(alarmId);
 
         oldAlarm.setTime(data.getIntExtra("hour", 0), data.getIntExtra("minute", 0));
         oldAlarm.setName(data.getStringExtra("alarm_name"));
+        oldAlarm.setRepeat(data.getBooleanExtra("alarm_repeat", false));
 
         oldAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
 

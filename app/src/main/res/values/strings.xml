@@ -11,14 +11,21 @@
 
     //PREFERENCES
     <string name="title_general">General</string>
+
+    <string name="title_alarm_time">Alarm Time</string>
+    <string name="summary_alarm_time">Enter the time of the alarm.</string>
     <string name="title_alarm_name">Alarm Name</string>
     <string name="summary_alarm_name">Enter the name of the alarm.</string>
     <string name="title_alarm_repeat">Repeat</string>
     <string name="summary_alarm_repeat">If checked, alarm will be reset after activated.</string>
 
     //BUTTONS
+    <string name="button_add">Add</string>
+    <string name="button_cancel">Cancel</string>
     <string name="button_dismiss">Dismiss</string>
     <string name="button_snooze">Snooze</string>
+    <string name="button_done">DONE</string>
+
 
     //NOTIFICATION
     <string name="ticker_title">Next Alarm at: </string>

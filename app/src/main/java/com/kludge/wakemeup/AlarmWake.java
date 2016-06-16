@@ -10,6 +10,8 @@ import android.widget.Button;
 
 public class AlarmWake extends AppCompatActivity {
 
+    public static final int MATH_GAME = 1;
+
     Intent ringService;
 
     @Override

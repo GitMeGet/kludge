@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/title_general" />
+
         <EditTextPreference android:key="preference_alarm_name"
             android:title="@string/title_alarm_name"
             android:summary="@string/summary_alarm_name"
-            android:defaultValue="New Alarm"/>
+            android:hint="@string/empty_alarm_field" />
+
+        <com.kludge.wakemeup.TimePreference android:key="preference_alarm_time"
+            android:title="@string/title_alarm_time"
+            android:summary="@string/summary_alarm_time"
+            android:dialogMessage=""
+            android:positiveButtonText="@string/button_add"
+            android:negativeButtonText="@string/button_cancel"/>
 
         <CheckBoxPreference android:key="preference_alarm_repeat"
             android:title="@string/title_alarm_repeat"
             android:summary="@string/summary_alarm_repeat"
             android:defaultValue="false" />
+
     <PreferenceCategory/>
 </PreferenceScreen>
