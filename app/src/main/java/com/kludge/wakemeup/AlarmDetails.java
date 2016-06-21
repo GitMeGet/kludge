@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 
 import org.json.JSONException;
@@ -22,6 +23,8 @@ public class AlarmDetails {
     private String strName;
     private boolean bOnState;
     private boolean bRepeat;
+    private int nSnooze;
+    private String uriRingtone;
 
     //create alarm ID
     private long mId;
@@ -40,8 +43,10 @@ public class AlarmDetails {
     private static final String JSON_STR_NAME = "strName";
     private static final String JSON_ON_STATE = "onState";
     private static final String JSON_REPEAT = "repeat";
+    private static final String JSON_RINGTONE = "ringtone";
+    private static final String JSON_SNOOZE = "snooze";
 
-    public AlarmDetails(int nHour, int nMin, String strName, boolean bRepeat) {
+    public AlarmDetails(int nHour, int nMin, String strName, boolean bRepeat, int nSnooze, String uriRingtone) {
         this.nHour = nHour;
         this.nMin = nMin;
 
@@ -56,6 +61,9 @@ public class AlarmDetails {
 
         this.bOnState = true;
         this.mId = System.currentTimeMillis();
+
+        this.nSnooze = nSnooze;
+        this.uriRingtone = uriRingtone;
     }
 
     // constructor that accepts JSON object
@@ -67,6 +75,8 @@ public class AlarmDetails {
         bOnState = json.getBoolean(JSON_ON_STATE);
         bRepeat = json.getBoolean(JSON_REPEAT);
         mId = json.getLong(JSON_ID);
+        nSnooze = json.getInt(JSON_SNOOZE);
+        uriRingtone = json.getString(JSON_RINGTONE);
     }
 
     // converts AlarmDetails.java  to a JSON object
@@ -80,6 +90,8 @@ public class AlarmDetails {
         json.put(JSON_ON_STATE, bOnState);
         json.put(JSON_REPEAT, bRepeat);
         json.put(JSON_ID, mId);
+        json.put(JSON_SNOOZE, nSnooze);
+        json.put(JSON_RINGTONE, uriRingtone);
 
         return json;
     }
@@ -121,9 +133,9 @@ public class AlarmDetails {
                 break;
             case SNOOZE_ALARM:
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + 100000, pendingIntent);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + nSnooze*60000, pendingIntent);
                 else
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + 100000, pendingIntent);
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + nSnooze*60000, pendingIntent);
                 break;
         }
 
@@ -139,14 +151,14 @@ public class AlarmDetails {
     public int getHour() {
         return nHour;
     }
-
     public int getMin() {
         return nMin;
     }
-
     public String getName() {
         return strName;
     }
+    public int getnSnooze() {return nSnooze;}
+    public String getRingtone() {return uriRingtone;}
 
 
 
@@ -164,9 +176,13 @@ public class AlarmDetails {
         alarmTime.set(Calendar.SECOND, 0);
         this.lTimeInMillis = alarmTime.getTimeInMillis();
     }
-    public void setRepeat(boolean bRepeat) {this.bRepeat = !bRepeat;}
+    public void setRepeat(boolean bRepeat) {this.bRepeat = bRepeat;}
 
     public void toggleOnState() {bOnState = !bOnState;}
+    public void setOnState(boolean bOnState){ this.bOnState = bOnState;}
 
+    public void setSnooze(int nSnooze) {this.nSnooze = nSnooze;}
+
+    public void setRingtone(String uriRingtone) {this.uriRingtone = uriRingtone;}
 
 }

@@ -7,6 +7,7 @@ import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class AlarmWake extends AppCompatActivity {
 
@@ -33,6 +34,7 @@ public class AlarmWake extends AppCompatActivity {
 
         //make it RING
         ringService = new Intent(this, RingtoneService.class);
+        ringService.putExtra("ringtone", alarm.getRingtone());
         startService(ringService);
 
         Button buttDismiss = (Button) findViewById(R.id.butt_dismiss_alarm);
@@ -42,6 +44,12 @@ public class AlarmWake extends AppCompatActivity {
             public void onClick(View v) {
                 //cancel RingtoneService and PendingIntent
                 stopService(ringService);
+
+                //check if REPEAT is on
+                if(alarm.isRepeat())
+                    alarm.setOnState(true);
+                else
+                    alarm.setOnState(false);
 
                 // release wake_lock
                 wakeLock.release();
@@ -60,6 +68,9 @@ public class AlarmWake extends AppCompatActivity {
 
                 // re-register snoozed alarm
                 alarm.registerAlarmIntent(c, AlarmDetails.SNOOZE_ALARM);
+
+                Toast.makeText(getApplicationContext(), ("Alarm will ring in "+alarm.getnSnooze()+" minutes"), Toast.LENGTH_SHORT).show();
+
 
                 // release wake_lock
                 wakeLock.release();

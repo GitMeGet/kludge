@@ -163,7 +163,9 @@ public class MainAlarm extends AppCompatActivity {
         AlarmDetails newAlarm = new AlarmDetails(data.getIntExtra("hour", 0),
                 data.getIntExtra("minute", 0),
                 data.getStringExtra("alarm_name"),
-                data.getBooleanExtra("alarm_repeat", false));
+                data.getBooleanExtra("repeat", false),
+                data.getIntExtra("snooze", 1),
+                data.getStringExtra("ringtone"));
 
         newAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
         alarms.add(newAlarm);
@@ -184,7 +186,9 @@ public class MainAlarm extends AppCompatActivity {
 
         oldAlarm.setTime(data.getIntExtra("hour", 0), data.getIntExtra("minute", 0));
         oldAlarm.setName(data.getStringExtra("alarm_name"));
-        oldAlarm.setRepeat(data.getBooleanExtra("alarm_repeat", false));
+        oldAlarm.setRepeat(data.getBooleanExtra("repeat", false));
+        oldAlarm.setSnooze(data.getIntExtra("snooze", 1));
+        oldAlarm.setRingtone(data.getStringExtra("ringtone"));
 
         oldAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
 
@@ -287,7 +291,10 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
 
         //updates the Views with the data
         alarmName.setText(alarm.getName());
-        alarmTime.setText(alarm.getHour() + ":" + alarm.getMin() + (alarm.isOnState() ? " ON" : " OFF")); //CHANGE THIS, ON OFF JUST TO TEST ONLY
+        alarmTime.setText(alarm.getHour() + ":" + alarm.getMin() + (alarm.isOnState() ? " ON" : " OFF")
+                +" Repeat: "+ (alarm.isRepeat()?"YES":"NO")
+                +" Snooze: "+ (alarm.getnSnooze())
+                +" Ringtone: "+ (alarm.getRingtone())); //todo: CHANGE THIS, ON OFF JUST TO TEST ONLY
 
         //return completed view to render on screen
         return convertView;

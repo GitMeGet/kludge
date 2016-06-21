@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.IBinder;
 
 public class RingtoneService extends Service {
@@ -40,7 +41,7 @@ public class RingtoneService extends Service {
 
 
         // play ringtone
-        alarm_ringer = MediaPlayer.create(getApplicationContext(), R.raw.souls);
+        alarm_ringer = MediaPlayer.create(getApplicationContext(), Uri.parse(intent.getStringExtra("ringtone")));
         alarm_ringer.setLooping(true);
         alarm_ringer.start();
 

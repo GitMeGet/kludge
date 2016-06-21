@@ -20,4 +20,16 @@
             android:defaultValue="false" />
 
     <PreferenceCategory/>
+    <PreferenceCategory android:title="Wake Configuration" />
+        <RingtonePreference android:key="preference_alarm_ringtone"
+            android:title="Alarm Tone"
+            android:summary="Choose an alarm ringtone." />
+
+        <ListPreference android:key="preference_snooze_duration"
+            android:title="Snooze Duration"
+            android:entries="@array/snooze_durations"
+            android:entryValues="@array/snooze_durations_values"
+            android:summary="Select preferred snooze length." />
+    <PreferenceCategory/>
+
 </PreferenceScreen>
