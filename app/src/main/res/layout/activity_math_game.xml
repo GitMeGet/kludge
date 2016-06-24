@@ -67,7 +67,8 @@
         android:layout_toLeftOf="@+id/game_text_operator"
         android:layout_toStartOf="@+id/game_text_operator"
         android:hint="Enter answer here"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:inputType="number"/>
 
     <Button
         android:layout_width="wrap_content"

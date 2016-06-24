@@ -26,6 +26,8 @@ public class MathGameActivity extends Activity {
     int numCorrect = 0;
     int totalCorrect = 3;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,7 +123,7 @@ public class MathGameActivity extends Activity {
         textNumCorrect.setText("" + numCorrect + "/" + totalCorrect);
 
         if (numCorrect == totalCorrect ){
-            setResult(AlarmWake.MATH_GAME);
+            setResult(RESULT_OK);
             finish();
         }
 

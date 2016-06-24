@@ -12,8 +12,40 @@ import android.widget.Toast;
 public class AlarmWake extends AppCompatActivity {
 
     public static final int MATH_GAME = 1;
+    public AlarmDetails alarm;
+    public PowerManager.WakeLock wakeLock;
 
     Intent ringService;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case MATH_GAME:
+                    //cancel RingtoneService and PendingIntent
+                    stopService(ringService);
+
+                    //check if REPEAT is on
+                    if(alarm.isRepeat()) {
+                        alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
+                        alarm.setOnState(true);
+                    }
+                    else
+                        alarm.setOnState(false);
+
+                    // release wake_lock
+                    wakeLock.release();
+
+                    finish();
+
+                    break;
+            }
+        }
+
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,11 +54,11 @@ public class AlarmWake extends AppCompatActivity {
 
         final Context c = getApplicationContext();
         long alarmId = getIntent().getLongExtra("alarmId", 0);
-        final AlarmDetails alarm = AlarmLab.get(c).getAlarmDetails(alarmId);
+        alarm = AlarmLab.get(c).getAlarmDetails(alarmId);
 
         // wake_lock
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK |
+        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK |
                 //  force the screen and/or keyboard to turn on immediately, when the WakeLock is acquired
                 PowerManager.ACQUIRE_CAUSES_WAKEUP,
                 "MyWakelockTag");
@@ -42,19 +74,11 @@ public class AlarmWake extends AppCompatActivity {
         buttDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //cancel RingtoneService and PendingIntent
-                stopService(ringService);
 
-                //check if REPEAT is on
-                if(alarm.isRepeat())
-                    alarm.setOnState(true);
-                else
-                    alarm.setOnState(false);
+                Intent i = new Intent(c, MathGameActivity.class);
+                startActivityForResult(i, MATH_GAME);
 
-                // release wake_lock
-                wakeLock.release();
 
-                finish();
             }
         });
 

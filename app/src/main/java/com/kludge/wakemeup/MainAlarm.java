@@ -239,6 +239,12 @@ public class MainAlarm extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        alarmAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         AlarmLab.get(getApplicationContext()).saveAlarms();

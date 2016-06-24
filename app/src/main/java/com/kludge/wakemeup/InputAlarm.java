@@ -1,31 +1,22 @@
 package com.kludge.wakemeup;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TimePicker;
-
-import java.util.Set;
 
 public class InputAlarm extends AppCompatActivity {
 
@@ -202,7 +193,7 @@ public class InputAlarm extends AppCompatActivity {
         data.putExtra("minute", sharedPrefs.getInt("preference_alarm_minute", 0));
         data.putExtra("repeat", sharedPrefs.getBoolean("preference_alarm_repeat", false));
         data.putExtra("snooze", Integer.parseInt(sharedPrefs.getString("preference_snooze_duration", "1")));
-        data.putExtra("ringtone", sharedPrefs.getString("preference_alarm_ringtone", "Empty"));
+        data.putExtra("ringtone", sharedPrefs.getString("preference_alarm_ringtone", Settings.System.DEFAULT_ALARM_ALERT_URI.toString()));
 
 
         data.putExtra("alarmId", alarmId); //alarmId can be -1, which means new alarm
