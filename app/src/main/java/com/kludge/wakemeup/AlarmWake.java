@@ -82,7 +82,7 @@ public class AlarmWake extends AppCompatActivity {
             }
         });
 
-        Button buttonSnooze = (Button) findViewById(R.id.buttonSnooze);
+        Button buttonSnooze = (Button) findViewById(R.id.butt_snooze_alarm);
         assert buttonSnooze != null;
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
             @Override

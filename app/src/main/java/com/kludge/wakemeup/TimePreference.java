@@ -41,6 +41,8 @@ public class TimePreference extends DialogPreference{
             editor.putInt("preference_alarm_hour", timePicker.getHour());
             editor.putInt("preference_alarm_minute", timePicker.getMinute());
 
+            editor.putInt("preference_alarm_time", timePicker.getHour()*3600000 + timePicker.getMinute()*60000);
+
             editor.apply();
         }
     }

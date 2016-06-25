@@ -78,17 +78,22 @@ public class AlarmLab {
 
     // retrieve earliest alarm
     public AlarmDetails getEarliestAlarm() {
-        /*
+
+        Log.d("Notification", "get earliest alarm");
+
         // if there is at least 1 alarm
         if (mAlarms.size() > 0) {
             AlarmDetails min = null;
 
+            // find 'on' alarms
             for (AlarmDetails a : mAlarms) {
                 if (a.isOnState()) {
                     min = a;
                 }
             }
 
+            // if there is at least 1 'on' alarm
+            // find the earliest amongst them
             if (min != null) {
                 for (AlarmDetails a : mAlarms) {
                     if (a.isOnState() && min.getTimeInMillis() > a.getTimeInMillis()) {
@@ -96,16 +101,10 @@ public class AlarmLab {
                     }
                 }
             }
-            if (mAlarms.get(0) != null) {
-            AlarmDetails min = mAlarms.get(0);
-            for (AlarmDetails a : mAlarms){
-                if (a.isOnState() && min.getTimeInMillis() > a.getTimeInMillis()){
-                    min = a;
-                }
-            }
 
             return min;
-        }*/
+        }
+
         return null;
     }
 

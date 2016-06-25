@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -38,37 +37,58 @@ public class MainAlarm extends AppCompatActivity {
 
     // for notifications
     private static Context mContext; // not sure if this is a good idea???
-    private static Resources r;
     private static NotificationManager notificationManager;
 
-    protected static void createNotification() {
+    protected static void createNotification(int type, AlarmDetails alarm) {
 
         Intent i = new Intent(mContext, MainAlarm.class);
         PendingIntent pi = PendingIntent.getActivity(mContext, 0, i, 0);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
-        String time = "No Alarm Set";
-        String hTA = "";
 
-        AlarmDetails earliestAlarm = AlarmLab.get(mContext).getEarliestAlarm();
-        if (earliestAlarm != null){
-            time = "Next Alarm: " + earliestAlarm.getHour() + ":" + earliestAlarm.getMin();
+        switch (type) {
+            case 0:
+                String time = "No Alarm";
 
-            double hoursToAlarm = (earliestAlarm.getTimeInMillis() - System.currentTimeMillis())*(2.77778e-7);
-            hTA = "Hours till wake: " + String.format("%.2f",hoursToAlarm);
+                AlarmDetails earliestAlarm = AlarmLab.get(mContext).getEarliestAlarm();
+                if (earliestAlarm != null) {
+                    time = "Next Alarm: " + earliestAlarm.getHour() + ":" + earliestAlarm.getMin();
+                }
+
+                mBuilder.setContentTitle(time)
+                        .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+                        // persistent
+                        .setOngoing(true)
+                        // notification opens up MainAlarm when pressed
+                        .setContentIntent(pi);
+
+                Notification notification = mBuilder.build();
+                notificationManager.notify(0, notification);
+                break;
+            case 1:
+
+                double hoursToAlarm = (alarm.getTimeInMillis() - System.currentTimeMillis()) * (2.77778e-7);
+                double minsToAlarm = (hoursToAlarm - (int)hoursToAlarm) * 60;
+                String hTA = "Time till wake: " + (int)hoursToAlarm + "hrs "
+                        + String.format("%.0f", minsToAlarm) + "mins";
+
+                mBuilder.setContentTitle("Please Sleep Soon")
+                        .setContentText(hTA)
+                        .setSmallIcon(android.R.drawable.ic_lock_power_off)
+                        // notification opens up MainAlarm when pressed
+                        .setContentIntent(pi);
+
+                Notification notification1 = mBuilder.build();
+
+                notificationManager.notify(1, notification1);
+
+
+                break;
+
 
         }
 
-        mBuilder.setContentTitle(time)
-                .setContentText(hTA)
-                .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-                // persistent
-                .setOngoing(true)
-                .setContentIntent(pi);
 
-        Notification notification = mBuilder.build();
-
-        notificationManager.notify(0, notification);
     }
 
     @Override
@@ -78,9 +98,8 @@ public class MainAlarm extends AppCompatActivity {
 
         // for notifications
         mContext = this;
-        r = getResources();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        createNotification();
+        createNotification(0,null);
 
         //initialise alarmManager
         //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -174,7 +193,7 @@ public class MainAlarm extends AppCompatActivity {
         AlarmLab.get(getApplicationContext()).saveAlarms();
 
         // update persistent notification
-        createNotification();
+        createNotification(0,null);
 
         alarmAdapter.notifyDataSetChanged();
     }
@@ -190,13 +209,14 @@ public class MainAlarm extends AppCompatActivity {
         oldAlarm.setSnooze(data.getIntExtra("snooze", 1));
         oldAlarm.setRingtone(data.getStringExtra("ringtone"));
 
-        oldAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
+        if (oldAlarm.isOnState())
+            oldAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
 
         //save the alarms
         AlarmLab.get(getApplicationContext()).saveAlarms();
 
         // update persistent notification
-        createNotification();
+        createNotification(0,null);
 
         alarmAdapter.notifyDataSetChanged();
     }
@@ -283,7 +303,7 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
                 alarm.toggleOnState();
 
                 // update persistent notification
-                MainAlarm.createNotification();
+                MainAlarm.createNotification(0,null);
 
                 //checks the pendingIntent for the alarm
                 if (alarm.isOnState())
@@ -298,9 +318,9 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         //updates the Views with the data
         alarmName.setText(alarm.getName());
         alarmTime.setText(alarm.getHour() + ":" + alarm.getMin() + (alarm.isOnState() ? " ON" : " OFF")
-                +" Repeat: "+ (alarm.isRepeat()?"YES":"NO")
-                +" Snooze: "+ (alarm.getnSnooze())
-                +" Ringtone: "+ (alarm.getRingtone())); //todo: CHANGE THIS, ON OFF JUST TO TEST ONLY
+                + " Repeat: " + (alarm.isRepeat() ? "YES" : "NO")
+                + " Snooze: " + (alarm.getnSnooze())
+                + " Ringtone: " + (alarm.getRingtone())); //todo: CHANGE THIS, ON OFF JUST TO TEST ONLY
 
         //return completed view to render on screen
         return convertView;
