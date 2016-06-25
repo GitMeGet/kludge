@@ -12,6 +12,7 @@ import android.widget.Toast;
 public class AlarmWake extends AppCompatActivity {
 
     public static final int MATH_GAME = 1;
+    public static final int PONG_GAME = 2;
     public AlarmDetails alarm;
     public PowerManager.WakeLock wakeLock;
 
@@ -21,31 +22,22 @@ public class AlarmWake extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case MATH_GAME:
-                    //cancel RingtoneService and PendingIntent
-                    stopService(ringService);
+            //cancel RingtoneService and PendingIntent
+            stopService(ringService);
 
-                    //check if REPEAT is on
-                    if(alarm.isRepeat()) {
-                        alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
-                        alarm.setOnState(true);
-                    }
-                    else
-                        alarm.setOnState(false);
+            //check if REPEAT is on
+            if (alarm.isRepeat()) {
+                alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
+                alarm.setOnState(true);
+            } else
+                alarm.setOnState(false);
 
-                    // release wake_lock
-                    wakeLock.release();
-
-                    finish();
-
-                    break;
-            }
+            // release wake_lock
+            wakeLock.release();
+            finish();
         }
-
-
-
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +51,8 @@ public class AlarmWake extends AppCompatActivity {
         // wake_lock
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK |
-                //  force the screen and/or keyboard to turn on immediately, when the WakeLock is acquired
-                PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                        //  force the screen and/or keyboard to turn on immediately, when the WakeLock is acquired
+                        PowerManager.ACQUIRE_CAUSES_WAKEUP,
                 "MyWakelockTag");
         wakeLock.acquire();
 
@@ -69,14 +61,27 @@ public class AlarmWake extends AppCompatActivity {
         ringService.putExtra("ringtone", alarm.getRingtone());
         startService(ringService);
 
-        Button buttDismiss = (Button) findViewById(R.id.butt_dismiss_alarm);
-        assert buttDismiss != null;
-        buttDismiss.setOnClickListener(new View.OnClickListener() {
+        Button buttMathGameDismiss = (Button) findViewById(R.id.butt_math_game_dismiss);
+        assert buttMathGameDismiss != null;
+        buttMathGameDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Intent i = new Intent(c, MathGameActivity.class);
                 startActivityForResult(i, MATH_GAME);
+
+
+            }
+        });
+
+        Button buttPongGameDismiss = (Button) findViewById(R.id.butt_pong_game_dismiss);
+        assert buttPongGameDismiss != null;
+        buttPongGameDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i = new Intent(c, PongGameActivity.class);
+                startActivityForResult(i, PONG_GAME);
 
 
             }
@@ -93,7 +98,7 @@ public class AlarmWake extends AppCompatActivity {
                 // re-register snoozed alarm
                 alarm.registerAlarmIntent(c, AlarmDetails.SNOOZE_ALARM);
 
-                Toast.makeText(getApplicationContext(), ("Alarm will ring in "+alarm.getnSnooze()+" minutes"), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), ("Alarm will ring in " + alarm.getnSnooze() + " minutes"), Toast.LENGTH_SHORT).show();
 
 
                 // release wake_lock

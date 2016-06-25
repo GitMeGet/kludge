@@ -52,7 +52,11 @@ public class MainAlarm extends AppCompatActivity {
 
                 AlarmDetails earliestAlarm = AlarmLab.get(mContext).getEarliestAlarm();
                 if (earliestAlarm != null) {
-                    time = "Next Alarm: " + earliestAlarm.getHour() + ":" + earliestAlarm.getMin();
+                    time = "Next Alarm: " + earliestAlarm.getHour() + ":";
+                    if (earliestAlarm.getMin() < 10){
+                        time += "0";
+                    }
+                    time += earliestAlarm.getMin();
                 }
 
                 mBuilder.setContentTitle(time)
@@ -69,8 +73,12 @@ public class MainAlarm extends AppCompatActivity {
 
                 double hoursToAlarm = (alarm.getTimeInMillis() - System.currentTimeMillis()) * (2.77778e-7);
                 double minsToAlarm = (hoursToAlarm - (int)hoursToAlarm) * 60;
+                String minutesToAlarm = String.format("%.0f", minsToAlarm);
+                if (minsToAlarm < 10){
+                    minutesToAlarm = '0' + minutesToAlarm;
+                }
                 String hTA = "Time till wake: " + (int)hoursToAlarm + "hrs "
-                        + String.format("%.0f", minsToAlarm) + "mins";
+                        + minutesToAlarm + "mins";
 
                 mBuilder.setContentTitle("Please Sleep Soon")
                         .setContentText(hTA)
@@ -81,7 +89,6 @@ public class MainAlarm extends AppCompatActivity {
                 Notification notification1 = mBuilder.build();
 
                 notificationManager.notify(1, notification1);
-
 
                 break;
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kludge.wakemeup">
+          package="com.kludge.wakemeup">
 
-    <uses-permission android:name ="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:allowBackup="true"
@@ -18,31 +18,43 @@
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
 
         </activity>
-
-        <activity android:name=".AlarmWake"
-                  android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".InputAlarm"
             android:label="@string/input_alarm_name"
             android:parentActivityName=".MainAlarm"/>
 
-        <activity android:name=".MathGameActivity"
-            android:parentActivityName=".AlarmWake"/>
+        <activity
+            android:name=".AlarmWake"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+
+        <activity
+            android:name=".MathGameActivity"
+            android:parentActivityName=".AlarmWake"
+            android:screenOrientation="portrait"
+            />
+
+        <activity
+            android:name=".PongGameActivity"
+            android:parentActivityName=".AlarmWake"
+            android:screenOrientation="portrait"
+            />
 
         <service
             android:name=".RingtoneService"
             android:enabled="true"
             android:exported="true"/>
 
-        <receiver android:name=".AlarmReceiver" />
+        <receiver android:name=".AlarmReceiver"/>
 
     </application>
 
