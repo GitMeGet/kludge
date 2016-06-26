@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextClock;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class MainAlarm extends AppCompatActivity {
@@ -106,7 +111,7 @@ public class MainAlarm extends AppCompatActivity {
         // for notifications
         mContext = this;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        createNotification(0,null);
+        createNotification(0, null);
 
         //initialise alarmManager
         //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -121,17 +126,6 @@ public class MainAlarm extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.list_alarms);
         assert listView != null;
         listView.setAdapter(alarmAdapter);
-
-
-        //sets up addAlarm button and listener
-        FloatingActionButton buttAddAlarm = (FloatingActionButton) findViewById(R.id.float_add_alarm);
-        assert buttAddAlarm != null;
-        buttAddAlarm.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                //opens add alarm activity
-                requestAddAlarm();
-            }
-        });
 
         //sets up listView for contextMenu
         registerForContextMenu(listView);
@@ -191,7 +185,10 @@ public class MainAlarm extends AppCompatActivity {
                 data.getStringExtra("alarm_name"),
                 data.getBooleanExtra("repeat", false),
                 data.getIntExtra("snooze", 1),
-                data.getStringExtra("ringtone"));
+                data.getStringExtra("ringtone"),
+                data.getIntExtra("game", AlarmDetails.GAME_DISABLED),
+                data.getIntExtra("mathqns", 1),
+                data.getIntExtra("sleepdur", 6));
 
         newAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
         alarms.add(newAlarm);
@@ -215,6 +212,11 @@ public class MainAlarm extends AppCompatActivity {
         oldAlarm.setRepeat(data.getBooleanExtra("repeat", false));
         oldAlarm.setSnooze(data.getIntExtra("snooze", 1));
         oldAlarm.setRingtone(data.getStringExtra("ringtone"));
+
+        oldAlarm.setGame(data.getIntExtra("game", AlarmDetails.GAME_DISABLED));
+        oldAlarm.setMathQns(data.getIntExtra("mathqns", 1));
+
+        oldAlarm.setSleepDur(data.getIntExtra("sleepdur", 6));
 
         if (oldAlarm.isOnState())
             oldAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
@@ -277,6 +279,21 @@ public class MainAlarm extends AppCompatActivity {
         AlarmLab.get(getApplicationContext()).saveAlarms();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main_alarm, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.menu_plus:
+                requestAddAlarm();
+            default:
+                return false;
+        }
+    }
 }
 
 //AlarmAdapter for the ListView
@@ -324,7 +341,11 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
 
         //updates the Views with the data
         alarmName.setText(alarm.getName());
-        alarmTime.setText(alarm.getHour() + ":" + alarm.getMin() + (alarm.isOnState() ? " ON" : " OFF")
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMinimumIntegerDigits(2);
+
+        alarmTime.setText(alarm.getHour() +":"+ nf.format(alarm.getMin())
+                + (alarm.isOnState() ? " ON" : " OFF")
                 + " Repeat: " + (alarm.isRepeat() ? "YES" : "NO")
                 + " Snooze: " + (alarm.getnSnooze())
                 + " Ringtone: " + (alarm.getRingtone())); //todo: CHANGE THIS, ON OFF JUST TO TEST ONLY

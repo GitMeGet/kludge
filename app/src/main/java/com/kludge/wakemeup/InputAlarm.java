@@ -18,6 +18,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.text.NumberFormat;
+import java.util.List;
+
 public class InputAlarm extends AppCompatActivity {
 
     long alarmId;
@@ -28,7 +31,6 @@ public class InputAlarm extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_alarm);
-
 
         //sets up Preferences fragment
         FragmentManager fragmentManager = getFragmentManager();
@@ -55,10 +57,16 @@ public class InputAlarm extends AppCompatActivity {
             editor.putString("preference_snooze_duration", ""+alarm.getnSnooze());
             editor.putString("preference_alarm_ringtone", alarm.getRingtone());
 
+            editor.putString("preference_game_type", ""+alarm.getGame());
+            editor.putString("preference_game_mathqns", ""+alarm.getMathQns());
+
+            editor.putString("preference_sleep_duration", ""+alarm.getSleepDur());
+
             editor.apply();
         }
 
-        /* todo:fix updating summary
+        /*
+         //todo:fix updating summary
         //update time text on alarm preference
         prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -122,6 +130,7 @@ public class InputAlarm extends AppCompatActivity {
             super.onCreate(savedInstanceState);
 
             addPreferencesFromResource(R.xml.alarm_preferences);
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
 
         @Override
@@ -153,18 +162,17 @@ public class InputAlarm extends AppCompatActivity {
                     break;
                 case "preference_alarm_time":
                     com.kludge.wakemeup.TimePreference prefTime = (com.kludge.wakemeup.TimePreference) findPreference(key);
-                    prefTime.setSummary("Time set: "+sharedPreferences.getInt("preference_alarm_hour",0)+":"+sharedPreferences.getInt("preference_alarm_minute", 0));
+                    NumberFormat nf = NumberFormat.getInstance();
+                    nf.setMinimumIntegerDigits(2);
+                    prefTime.setSummary("Time: "+sharedPreferences.getInt("preference_alarm_hour",0)+":"+nf.format(sharedPreferences.getInt("preference_alarm_minute", 0)));
                     break;
-                case "preference_alarm_snooze":
+                case "preference_snooze_duration":
                     ListPreference prefSnooze = (ListPreference) findPreference(key) ;
-                    prefSnooze.setSummary("Snooze duration: "+sharedPreferences.getInt("preference_snooze_duration", 0)+" minutes");
+                    prefSnooze.setSummary("Snooze duration: "+sharedPreferences.getString("preference_snooze_duration", "3")+" minutes");
                     break;
-
             }
         }
     }
-
-
 
     private void sendAlarm(){
 
@@ -188,6 +196,9 @@ public class InputAlarm extends AppCompatActivity {
         alarmId = getIntent().getLongExtra("alarmId", -1);
 
         Intent data = new Intent();
+
+        data.putExtra("alarmId", alarmId); //alarmId can be -1, which means new alarm
+
         data.putExtra("alarm_name", sharedPrefs.getString("preference_alarm_name", "Alamo Name"));
         data.putExtra("hour", sharedPrefs.getInt("preference_alarm_hour", 0));
         data.putExtra("minute", sharedPrefs.getInt("preference_alarm_minute", 0));
@@ -195,8 +206,10 @@ public class InputAlarm extends AppCompatActivity {
         data.putExtra("snooze", Integer.parseInt(sharedPrefs.getString("preference_snooze_duration", "1")));
         data.putExtra("ringtone", sharedPrefs.getString("preference_alarm_ringtone", Settings.System.DEFAULT_ALARM_ALERT_URI.toString()));
 
+        data.putExtra("game", Integer.parseInt(sharedPrefs.getString("preference_game_type", ""+AlarmDetails.GAME_DISABLED)));
+        data.putExtra("mathqns", Integer.parseInt(sharedPrefs.getString("preference_game_mathqns", "1")));
 
-        data.putExtra("alarmId", alarmId); //alarmId can be -1, which means new alarm
+        data.putExtra("sleepdur", Integer.parseInt(sharedPrefs.getString("preference_sleep_duration", "6")));
 
         setResult(MainAlarm.RESULT_OK, data);
 

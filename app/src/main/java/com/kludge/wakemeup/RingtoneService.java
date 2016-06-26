@@ -35,8 +35,8 @@ public class RingtoneService extends Service {
                 (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         am.setStreamVolume(
-                AudioManager.STREAM_MUSIC,
-                am.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+                AudioManager.STREAM_ALARM,
+                am.getStreamMaxVolume(AudioManager.STREAM_ALARM),
                 0);
 
 

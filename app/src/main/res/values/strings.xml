@@ -26,8 +26,11 @@
     <string name="button_snooze">Snooze</string>
     <string name="button_done">DONE</string>
 
-
     //NOTIFICATION
     <string name="ticker_title">Next Alarm at: </string>
+
+    //MATHGAME TEXT
+    <string name="game_score"><u>Score</u></string>
+    <string name="game_empty_answer">Enter Answer Here</string>
 
 </resources>

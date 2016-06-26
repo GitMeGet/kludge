@@ -40,6 +40,8 @@ public class TimePreference extends DialogPreference{
         if(positiveResult){
             editor.putInt("preference_alarm_hour", timePicker.getHour());
             editor.putInt("preference_alarm_minute", timePicker.getMinute());
+            editor.putInt("preference_alarm_time", timePicker.getHour()*3600000+timePicker.getMinute()*60000); //placeholder just so onSharedPrefChange is called? idk
+
 
             editor.putInt("preference_alarm_time", timePicker.getHour()*3600000 + timePicker.getMinute()*60000);
 

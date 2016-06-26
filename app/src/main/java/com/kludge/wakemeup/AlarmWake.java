@@ -61,29 +61,30 @@ public class AlarmWake extends AppCompatActivity {
         ringService.putExtra("ringtone", alarm.getRingtone());
         startService(ringService);
 
-        Button buttMathGameDismiss = (Button) findViewById(R.id.butt_math_game_dismiss);
-        assert buttMathGameDismiss != null;
-        buttMathGameDismiss.setOnClickListener(new View.OnClickListener() {
+        Button buttDismiss = (Button) findViewById(R.id.butt_dismiss);
+        assert buttDismiss != null;
+        buttDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent i = new Intent(c, MathGameActivity.class);
-                startActivityForResult(i, MATH_GAME);
+                Intent i;
 
-
-            }
-        });
-
-        Button buttPongGameDismiss = (Button) findViewById(R.id.butt_pong_game_dismiss);
-        assert buttPongGameDismiss != null;
-        buttPongGameDismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent i = new Intent(c, PongGameActivity.class);
-                startActivityForResult(i, PONG_GAME);
-
-
+                switch(alarm.getGame()){
+                    case AlarmDetails.GAME_DISABLED:
+                        stopService(ringService);
+                        wakeLock.release();
+                        finish();
+                        break;
+                    case AlarmDetails.GAME_MATH:
+                        i = new Intent(c, MathGameActivity.class);
+                        i.putExtra("mathqns", alarm.getMathQns());
+                        startActivityForResult(i, MATH_GAME);
+                        break;
+                    case AlarmDetails.GAME_PONG:
+                        i = new Intent(c, PongGameActivity.class);
+                        startActivityForResult(i, PONG_GAME);
+                        break;
+                }
             }
         });
 

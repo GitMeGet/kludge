@@ -24,9 +24,17 @@ public class AlarmDetails {
     private boolean bRepeat;
     private int nSnooze;
     private String uriRingtone;
+    private int nGame;
+    private int nMathQns;
+    private int nSleepDur;
 
     //create alarm ID
     private long mId;
+
+    //game type ID
+    public static final int GAME_DISABLED = 0;
+    public static final int GAME_MATH = 1;
+    public static final int GAME_PONG = 2;
 
     //request codes
     public static final int ADD_ALARM = 1;
@@ -44,43 +52,58 @@ public class AlarmDetails {
     private static final String JSON_REPEAT = "repeat";
     private static final String JSON_RINGTONE = "ringtone";
     private static final String JSON_SNOOZE = "snooze";
+    private static final String JSON_GAME = "game";
+    private static final String JSON_MATHQNS = "mathqns";
+    private static final String JSON_SLEEPDUR = "sleepdur";
 
-    public AlarmDetails(int nHour, int nMin, String strName, boolean bRepeat, int nSnooze, String uriRingtone) {
+    public AlarmDetails(int nHour, int nMin, String strName, boolean bRepeat, int nSnooze,
+                        String uriRingtone, int nGame, int nMathQns, int nSleepDur) {
+        this.mId = System.currentTimeMillis();
+
         this.nHour = nHour;
         this.nMin = nMin;
-
         Calendar alarmTime = Calendar.getInstance();
         alarmTime.set(Calendar.HOUR_OF_DAY, nHour);
         alarmTime.set(Calendar.MINUTE, nMin);
         alarmTime.set(Calendar.SECOND, 0);
         this.lTimeInMillis = alarmTime.getTimeInMillis();
-
         this.strName = strName;
         this.bRepeat = bRepeat;
-
         this.bOnState = true;
-        this.mId = System.currentTimeMillis();
-
         this.nSnooze = nSnooze;
         this.uriRingtone = uriRingtone;
+
+        this.nGame = nGame;
+        this.nMathQns = nMathQns;
+
+        this.nSleepDur = nSleepDur;
     }
 
     // constructor that accepts JSON object
     public AlarmDetails(JSONObject json) throws JSONException {
+        mId = json.getLong(JSON_ID);
+
         nHour = json.getInt(JSON_HOUR);
         nMin = json.getInt(JSON_MIN);
         lTimeInMillis = json.getLong(JSON_MILLIS);
         strName = json.getString(JSON_STR_NAME);
         bOnState = json.getBoolean(JSON_ON_STATE);
         bRepeat = json.getBoolean(JSON_REPEAT);
-        mId = json.getLong(JSON_ID);
+
         nSnooze = json.getInt(JSON_SNOOZE);
         uriRingtone = json.getString(JSON_RINGTONE);
+
+        nGame = json.getInt(JSON_GAME);
+        nMathQns = json.getInt(JSON_MATHQNS);
+
+        nSleepDur = json.getInt(JSON_SLEEPDUR);
     }
 
     // converts AlarmDetails.java  to a JSON object
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
+
+        json.put(JSON_ID, mId);
 
         json.put(JSON_HOUR, nHour);
         json.put(JSON_MIN, nMin);
@@ -88,9 +111,13 @@ public class AlarmDetails {
         json.put(JSON_STR_NAME, strName);
         json.put(JSON_ON_STATE, bOnState);
         json.put(JSON_REPEAT, bRepeat);
-        json.put(JSON_ID, mId);
         json.put(JSON_SNOOZE, nSnooze);
         json.put(JSON_RINGTONE, uriRingtone);
+
+        json.put(JSON_GAME, nGame);
+        json.put(JSON_MATHQNS, nMathQns);
+
+        json.put(JSON_SLEEPDUR, nSleepDur);
 
         return json;
     }
@@ -215,45 +242,41 @@ public class AlarmDetails {
     public long getId() {
         return mId;
     }
-
     public boolean isOnState() {
         return bOnState;
     }
-
     public boolean isRepeat() {
         return bRepeat;
     }
-
     public long getTimeInMillis() {
         return lTimeInMillis;
     }
-
     public int getHour() {
         return nHour;
     }
-
     public int getMin() {
         return nMin;
     }
-
     public String getName() {
         return strName;
     }
-
     public int getnSnooze() {
         return nSnooze;
     }
-
     public String getRingtone() {
         return uriRingtone;
     }
+
+    public int getGame() {return nGame;}
+    public int getMathQns() {return nMathQns;}
+
+    public int getSleepDur() {return nSleepDur;}
 
 
     //setters
     public void setName(String strName) {
         this.strName = strName;
     }
-
     public void setTime(int nHour, int nMin) {
         this.nHour = nHour;
         this.nMin = nMin;
@@ -268,21 +291,22 @@ public class AlarmDetails {
     public void setRepeat(boolean bRepeat) {
         this.bRepeat = bRepeat;
     }
-
     public void toggleOnState() {
         bOnState = !bOnState;
     }
-
     public void setOnState(boolean bOnState) {
         this.bOnState = bOnState;
     }
-
     public void setSnooze(int nSnooze) {
         this.nSnooze = nSnooze;
     }
-
     public void setRingtone(String uriRingtone) {
         this.uriRingtone = uriRingtone;
     }
+
+    public void setGame(int nGame) {this.nGame = nGame;}
+    public void setMathQns(int nMathQns) {this.nMathQns = nMathQns;}
+
+    public void setSleepDur(int nSleepDur) {this.nSleepDur = nSleepDur;}
 
 }

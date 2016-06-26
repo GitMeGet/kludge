@@ -24,7 +24,7 @@ public class MathGameActivity extends Activity {
     int currentScore = 0;
     int level = 1;
     int numCorrect = 0;
-    int totalCorrect = 3;
+    int totalCorrect;
 
 
 
@@ -32,6 +32,8 @@ public class MathGameActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_math_game);
+
+        totalCorrect = getIntent().getIntExtra("mathqns", 1);
 
         textOperandA = (TextView) findViewById(R.id.game_text_operandA);
         textOperandB = (TextView) findViewById(R.id.game_text_operandB);
@@ -45,6 +47,8 @@ public class MathGameActivity extends Activity {
         // get AlarmDetails from AlarmLab
         // get level from AlarmDetails
         // get totalCorrect from AlarmDetails
+
+
 
         textNumCorrect.setText("" + numCorrect + "/" + totalCorrect);
 

@@ -19,7 +19,5 @@ public class NotificationReceiver extends BroadcastReceiver {
         AlarmDetails alarm = AlarmLab.get(context).getAlarmDetails(alarmId);
 
         MainAlarm.createNotification(1, alarm);
-
-
     }
 }

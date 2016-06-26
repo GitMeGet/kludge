@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string-array name="snooze_durations">
         <item name="3min">3 Minutes</item>
         <item name="5min">5 Minutes</item>
@@ -14,6 +13,43 @@
         <item>10</item>
         <item>15</item>
         <item>30</item>
+    </string-array>
+
+    <string-array name="game_types">
+        <item name="Disabled">Disabled</item>
+        <item name="MathGame">Math Game</item>
+        <item name="PongGame">Pong Game</item>
+    </string-array>
+    <string-array name="game_types_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="game_mathqns">
+        <item name="1qn">1 Question</item>
+        <item name="2qn">2 Questions</item>
+        <item name="3qn">3 Questions</item>
+        <item name="5qn">5 Questions</item>
+        <item name="10qn">10 Questions</item>
+    </string-array>
+    <string-array name="game_mathqns_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+
+    <string-array name="sleep_durations">
+        <item name="4hrs">4 Hours</item>
+        <item name="6hrs">6 Hours</item>
+        <item name="8hrs">8 Hours</item>
+    </string-array>
+    <string-array name="sleep_durations_values">
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
     </string-array>
 
 </resources>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/title_general" />
-
         <EditTextPreference android:key="preference_alarm_name"
             android:title="@string/title_alarm_name"
             android:summary="@string/summary_alarm_name"
@@ -19,7 +18,12 @@
             android:summary="@string/summary_alarm_repeat"
             android:defaultValue="false" />
 
-    <PreferenceCategory/>
+        <!-- KIV, custom alarm volume, now uses SYSTEM settings
+        <com.kludge.wakemeup.SeekBarPreference android:key="preference_alarm_volume"
+            android:title="Alarm Volume"
+            android:summary="Select preferred alarm volume."
+            android:
+            -->
     <PreferenceCategory android:title="Wake Configuration" />
         <RingtonePreference android:key="preference_alarm_ringtone"
             android:title="Alarm Tone"
@@ -29,7 +33,29 @@
             android:title="Snooze Duration"
             android:entries="@array/snooze_durations"
             android:entryValues="@array/snooze_durations_values"
-            android:summary="Select preferred snooze length." />
-    <PreferenceCategory/>
+            android:summary="%s"
+            android:defaultValue="3"/>
 
+    <PreferenceCategory android:title="Dismissal Configuration" />
+        <ListPreference android:key="preference_game_type"
+            android:title="Dismiss Activity"
+            android:entries="@array/game_types"
+            android:entryValues="@array/game_types_values"
+            android:summary="%s"
+            android:defaultValue="0"/>
+
+        <ListPreference android:key="preference_game_mathqns"
+            android:title="Math Questions"
+            android:entries="@array/game_mathqns"
+            android:entryValues="@array/game_mathqns_values"
+            android:summary="%s"
+            android:defaultValue="1" />
+
+    <PreferenceCategory android:title="Sleep Reminder" />
+        <ListPreference android:key="preference_sleep_duration"
+            android:title="Sleep Duration"
+            android:entries="@array/sleep_durations"
+            android:entryValues="@array/sleep_durations_values"
+            android:summary="%s"
+            android:defaultValue="6" />
 </PreferenceScreen>
