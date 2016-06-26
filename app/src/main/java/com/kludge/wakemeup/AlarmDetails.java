@@ -122,6 +122,43 @@ public class AlarmDetails {
         return json;
     }
 
+    private void updateSleepNotification(Context context, PendingIntent notifPI){
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {                    // build before kit kat
+            if (getTimeInMillis() - getSleepDur()*3600000 < System.currentTimeMillis()) {       // if less than sleepDuration to go till alarm ring, register notification reminder
+                MainAlarm.createNotification(MainAlarm.ID_NOTIFICATION_SLEEP, this);
+            }
+            else {                                                                              // register pendingIntent for notification
+                alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() - getSleepDur()*3600000, notifPI);
+            }
+        }
+        else {                                                                       // build after kit kat
+            // register notification reminder
+            // if less than 8 hrs to go till alarm ring
+            if (getTimeInMillis() - getSleepDur()*3600000 < System.currentTimeMillis()) {
+                MainAlarm.createNotification(MainAlarm.ID_NOTIFICATION_SLEEP, this);
+            }
+            // more than 8 hrs till alarm ring
+            else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() - getSleepDur()*3600000, notifPI);
+            }
+        }
+    }
+
+    private void updateAlarmIntent(Context context, PendingIntent alarmPI){
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {                    // build before kit kat
+            alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis(), alarmPI);   // register alarm
+        }
+        else {                                                                       // build after kit kat
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis(), alarmPI);
+        }
+    }
+
 
     // registers alarm with alarm manager
     // also registers sleep reminder notification with alarm manager
@@ -131,111 +168,35 @@ public class AlarmDetails {
 
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
         alarmIntent.putExtra("alarmId", getId());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent alarmPI = PendingIntent.getBroadcast(context, (int) getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent notificationIntent = new Intent(context, NotificationReceiver.class);
         notificationIntent.putExtra("alarmId", getId());
-        PendingIntent pendingIntent1 = PendingIntent.getBroadcast(context, (int) getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent notifPI = PendingIntent.getBroadcast(context, (int) getId(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         switch (requestCode) {
             case ADD_ALARM:
-
-                // if alarm is due for tomorrow
-                if (getTimeInMillis() < System.currentTimeMillis()) {
-
-                    // update timeInMillis to one-day-later's time
-                    lTimeInMillis = getTimeInMillis() + (long) 8.64e+7;
-
-                    // build before kit kat
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                        // register alarm
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + (long) 8.64e+7, pendingIntent);
-
-                        // register notification reminder
-                        // if less than 8 hrs to go till alarm ring
-                        if (getTimeInMillis() - (long) 2.88e+7 < System.currentTimeMillis()) {
-                            MainAlarm.createNotification(1,this);
-                        }
-                        // more than 8 hrs till alarm ring
-                        else {
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + (long) 8.64e+7 - (long) 2.88e+7, pendingIntent1);
-                        }
-
-                    }
-
-                    // build after kit kat
-                    else {
-                        // register alarm
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + (long) 8.64e+7, pendingIntent);
-
-                        // register notification reminder
-                        // if less than 8 hrs to go till alarm ring
-                        if (getTimeInMillis() - (long) 2.88e+7 < System.currentTimeMillis()) {
-                            MainAlarm.createNotification(1,this);
-                        }
-                        // more than 8 hrs till alarm ring
-                        else {
-                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + (long) 8.64e+7, pendingIntent1);
-                        }
-
-                    }
+                if (getTimeInMillis() < System.currentTimeMillis()) {                          // if alarm is due for tomorrow
+                    lTimeInMillis = getTimeInMillis() + (long) 8.64e+7;                        // update timeInMillis to one-day-later's time
                 }
-
-                // alarm is due later today
-                else {
-                    // build earlier than kit kat
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-
-                        // register alarm
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis(), pendingIntent);
-
-                        // register notification reminder
-                        // if less than 8 hrs to go till alarm ring
-                        if (getTimeInMillis() - (long) 2.88e+7 < System.currentTimeMillis()) {
-                            MainAlarm.createNotification(1,this);
-                        }
-                        // more than 8 hrs till alarm ring
-                        else {
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() - (long) 2.88e+7, pendingIntent1);
-                        }
-
-                    }
-
-                    // build later than kit kat
-                    else {
-
-                        // register alarm
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis(), pendingIntent);
-
-                        // register notification reminder
-                        // if less than 8 hrs to go till alarm ring
-                        if (getTimeInMillis() - (long) 2.88e+7 < System.currentTimeMillis()) {
-                            MainAlarm.createNotification(1,this);
-                        }
-                        // more than 8 hrs till alarm ring
-                        else {
-                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() - (long) 2.88e+7, pendingIntent1);
-                        }
-                    }
-                }
-
-
+                updateAlarmIntent(context, alarmPI);
+                updateSleepNotification(context, notifPI);
                 break;
             case CANCEL_ALARM:
-                alarmManager.cancel(pendingIntent);
-                alarmManager.cancel(pendingIntent1);
+                alarmManager.cancel(alarmPI);
+                alarmManager.cancel(notifPI);
                 break;
             case CHECK_ALARM:
+
+                updateSleepNotification(context, notifPI);
                 break;
             case SNOOZE_ALARM:
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + nSnooze * 60000, pendingIntent);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + nSnooze * 60000, alarmPI);
                 else
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + nSnooze * 60000, pendingIntent);
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + nSnooze * 60000, alarmPI);
                 break;
         }
-
     }
 
     //getters

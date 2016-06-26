@@ -5,6 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -37,6 +40,9 @@ public class MainAlarm extends AppCompatActivity {
     static final int ID_CONTEXT_EDIT = 200;
     static final int ID_CONTEXT_DELETE = 201;
 
+    static final int ID_NOTIFICATION_ALARM = 100;
+    static final int ID_NOTIFICATION_SLEEP = 101;
+
     static ArrayList<AlarmDetails> alarms; //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
     static AlarmAdapter alarmAdapter; //arrayAdapter for the ListView
 
@@ -50,9 +56,10 @@ public class MainAlarm extends AppCompatActivity {
         PendingIntent pi = PendingIntent.getActivity(mContext, 0, i, 0);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
+        Notification notification;
 
         switch (type) {
-            case 0:
+            case ID_NOTIFICATION_ALARM:
                 String time = "No Alarm";
 
                 AlarmDetails earliestAlarm = AlarmLab.get(mContext).getEarliestAlarm();
@@ -71,10 +78,10 @@ public class MainAlarm extends AppCompatActivity {
                         // notification opens up MainAlarm when pressed
                         .setContentIntent(pi);
 
-                Notification notification = mBuilder.build();
-                notificationManager.notify(0, notification);
+                notification = mBuilder.build();
+                notificationManager.notify(ID_NOTIFICATION_ALARM, notification);
                 break;
-            case 1:
+            case ID_NOTIFICATION_SLEEP:
 
                 double hoursToAlarm = (alarm.getTimeInMillis() - System.currentTimeMillis()) * (2.77778e-7);
                 double minsToAlarm = (hoursToAlarm - (int)hoursToAlarm) * 60;
@@ -91,13 +98,18 @@ public class MainAlarm extends AppCompatActivity {
                         // notification opens up MainAlarm when pressed
                         .setContentIntent(pi);
 
-                Notification notification1 = mBuilder.build();
+                try {
+                    Uri notif = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    Ringtone r = RingtoneManager.getRingtone(mContext, notif);
+                    r.play();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                notificationManager.notify(1, notification1);
+                notification = mBuilder.build();
+                notificationManager.notify(ID_NOTIFICATION_SLEEP, notification);
 
                 break;
-
-
         }
 
 
@@ -111,7 +123,7 @@ public class MainAlarm extends AppCompatActivity {
         // for notifications
         mContext = this;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        createNotification(0, null);
+        createNotification(ID_NOTIFICATION_ALARM, null);
 
         //initialise alarmManager
         //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -190,16 +202,9 @@ public class MainAlarm extends AppCompatActivity {
                 data.getIntExtra("mathqns", 1),
                 data.getIntExtra("sleepdur", 6));
 
-        newAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
         alarms.add(newAlarm);
 
-        //save the alarms
-        AlarmLab.get(getApplicationContext()).saveAlarms();
-
-        // update persistent notification
-        createNotification(0,null);
-
-        alarmAdapter.notifyDataSetChanged();
+        updateAll(newAlarm);
     }
 
     private void editAlarm(Intent data) {
@@ -218,23 +223,21 @@ public class MainAlarm extends AppCompatActivity {
 
         oldAlarm.setSleepDur(data.getIntExtra("sleepdur", 6));
 
-        if (oldAlarm.isOnState())
-            oldAlarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
+        updateAll(oldAlarm);
+    }
+
+    //updates notifications, registers pendingintents, refreshes listview, saves alarms
+    private void updateAll(AlarmDetails alarm){
+        if (alarm.isOnState())
+            alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
 
         //save the alarms
         AlarmLab.get(getApplicationContext()).saveAlarms();
 
         // update persistent notification
-        createNotification(0,null);
+        createNotification(ID_NOTIFICATION_ALARM, alarm);
 
         alarmAdapter.notifyDataSetChanged();
-    }
-
-
-    //show the timePicker dialog inside a DialogFragment
-    private void showTimePickerDialog() {
-        DialogFragment newFrag = new TimePickerFragment();
-        newFrag.show(getSupportFragmentManager(), "timePicker"); //requires instance of a FragmentManager, + unique tag for this fragment
     }
 
     @Override
@@ -344,12 +347,13 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMinimumIntegerDigits(2);
 
-        alarmTime.setText(alarm.getHour() +":"+ nf.format(alarm.getMin())
+        alarmTime.setText(alarm.getHour() +":"+ nf.format(alarm.getMin()));
+                /*
                 + (alarm.isOnState() ? " ON" : " OFF")
                 + " Repeat: " + (alarm.isRepeat() ? "YES" : "NO")
                 + " Snooze: " + (alarm.getnSnooze())
                 + " Ringtone: " + (alarm.getRingtone())); //todo: CHANGE THIS, ON OFF JUST TO TEST ONLY
-
+                   */
         //return completed view to render on screen
         return convertView;
     }

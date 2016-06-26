@@ -18,6 +18,6 @@ public class NotificationReceiver extends BroadcastReceiver {
         long alarmId = intent.getLongExtra("alarmId", 0);
         AlarmDetails alarm = AlarmLab.get(context).getAlarmDetails(alarmId);
 
-        MainAlarm.createNotification(1, alarm);
+        MainAlarm.createNotification(MainAlarm.ID_NOTIFICATION_SLEEP, alarm);
     }
 }
