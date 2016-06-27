@@ -25,8 +25,9 @@ public class MathGameActivity extends Activity {
     int level = 1;
     int numCorrect = 0;
     int totalCorrect;
-
-
+    int difficulty;
+    int add_digits; // no. of digits of operands in math qn
+    int multiply_digits; // no. of digits of operands in math qn
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +48,25 @@ public class MathGameActivity extends Activity {
         // get AlarmDetails from AlarmLab
         // get level from AlarmDetails
         // get totalCorrect from AlarmDetails
+        difficulty = 3;
 
-
+        switch(difficulty){
+            case 1:
+                add_digits = 1;
+                break;
+            case 2:
+                add_digits = 2;
+                multiply_digits = 1;
+                break;
+            case 3:
+                add_digits = 3;
+                multiply_digits = 1;
+                break;
+            case 4:
+                add_digits = 4;
+                multiply_digits = 2;
+                break;
+        }
 
         textNumCorrect.setText("" + numCorrect + "/" + totalCorrect);
 
@@ -65,30 +83,39 @@ public class MathGameActivity extends Activity {
     private void setQuestion(){
 
         Random r = new Random();
-        int numberRange = (int) Math.pow(10, level + 1);
-        int operandA = r.nextInt(numberRange);
-        int operandB = r.nextInt(numberRange);
-        operandA++; //ensure non-zero
-        operandB++;
+        int numberRange;
+        int operandA = 1;
+        int operandB = 1;
 
         char [] operatorArray = {'+', '-', '*', '/'};
+
         char operator = operatorArray[r.nextInt(4)];
+
+        if (multiply_digits == 0){
+            operator = operatorArray[r.nextInt(2)];
+        }
 
         switch(operator){
             case '+':
+                numberRange = (int) Math.pow(10, add_digits);
+                operandA = r.nextInt(numberRange);
+                operandB = r.nextInt(numberRange);
                 correctAnswer = operandA + operandB;
                 break;
             case '-':
+                numberRange = (int) Math.pow(10, add_digits);
+                operandA = r.nextInt(numberRange);
+                operandB = r.nextInt(numberRange);
                 correctAnswer = operandA - operandB;
                 break;
             case '*':
-                numberRange = (int) Math.pow(10,level);
+                numberRange = (int) Math.pow(10,multiply_digits);
                 operandA = r.nextInt(numberRange);
                 operandB = r.nextInt(numberRange);
                 correctAnswer = operandA * operandB;
                 break;
             case '/':
-                numberRange = (int) Math.pow(10,level);
+                numberRange = (int) Math.pow(10,multiply_digits);
                 operandA = r.nextInt(numberRange);
                 operandB = r.nextInt(numberRange);
                 operandB++; // operandB can't be zero

@@ -41,6 +41,19 @@
         <item>10</item>
     </string-array>
 
+    <string-array name="game_mathdifficulty">
+        <item name="Easy">Easy</item>
+        <item name="Moderate">Moderate</item>
+        <item name="Hard">Hard</item>
+        <item name="Siao ah!">Siao ah!</item>
+    </string-array>
+    <string-array name="game_mathdifficulty_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
     <string-array name="sleep_durations">
         <item name="4hrs">4 Hours</item>
         <item name="6hrs">6 Hours</item>

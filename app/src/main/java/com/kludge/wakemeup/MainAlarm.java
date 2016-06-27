@@ -9,8 +9,6 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.view.ContextMenu;
@@ -23,10 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.TextClock;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -200,6 +195,7 @@ public class MainAlarm extends AppCompatActivity {
                 data.getStringExtra("ringtone"),
                 data.getIntExtra("game", AlarmDetails.GAME_DISABLED),
                 data.getIntExtra("mathqns", 1),
+                data.getIntExtra("mathdifficulty", 1),
                 data.getIntExtra("sleepdur", 6));
 
         alarms.add(newAlarm);
@@ -220,6 +216,7 @@ public class MainAlarm extends AppCompatActivity {
 
         oldAlarm.setGame(data.getIntExtra("game", AlarmDetails.GAME_DISABLED));
         oldAlarm.setMathQns(data.getIntExtra("mathqns", 1));
+        oldAlarm.setMathDifficulty(data.getIntExtra("mathdifficulty", 1));
 
         oldAlarm.setSleepDur(data.getIntExtra("sleepdur", 6));
 

@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.text.NumberFormat;
-import java.util.List;
 
 public class InputAlarm extends AppCompatActivity {
 
@@ -208,6 +207,7 @@ public class InputAlarm extends AppCompatActivity {
 
         data.putExtra("game", Integer.parseInt(sharedPrefs.getString("preference_game_type", ""+AlarmDetails.GAME_DISABLED)));
         data.putExtra("mathqns", Integer.parseInt(sharedPrefs.getString("preference_game_mathqns", "1")));
+        data.putExtra("mathdifficulty", Integer.parseInt(sharedPrefs.getString("preference_game_mathdifficulty", "1")));
 
         data.putExtra("sleepdur", Integer.parseInt(sharedPrefs.getString("preference_sleep_duration", "6")));
 

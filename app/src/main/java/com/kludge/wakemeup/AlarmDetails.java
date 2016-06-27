@@ -26,6 +26,7 @@ public class AlarmDetails {
     private String uriRingtone;
     private int nGame;
     private int nMathQns;
+    private int nMathDifficulty;
     private int nSleepDur;
 
     //create alarm ID
@@ -57,7 +58,7 @@ public class AlarmDetails {
     private static final String JSON_SLEEPDUR = "sleepdur";
 
     public AlarmDetails(int nHour, int nMin, String strName, boolean bRepeat, int nSnooze,
-                        String uriRingtone, int nGame, int nMathQns, int nSleepDur) {
+                        String uriRingtone, int nGame, int nMathQns, int nMathDifficulty, int nSleepDur) {
         this.mId = System.currentTimeMillis();
 
         this.nHour = nHour;
@@ -75,6 +76,7 @@ public class AlarmDetails {
 
         this.nGame = nGame;
         this.nMathQns = nMathQns;
+        this.nMathDifficulty = nMathDifficulty;
 
         this.nSleepDur = nSleepDur;
     }
@@ -230,6 +232,7 @@ public class AlarmDetails {
 
     public int getGame() {return nGame;}
     public int getMathQns() {return nMathQns;}
+    public int getMathDifficulty() {return nMathDifficulty;}
 
     public int getSleepDur() {return nSleepDur;}
 
@@ -267,6 +270,7 @@ public class AlarmDetails {
 
     public void setGame(int nGame) {this.nGame = nGame;}
     public void setMathQns(int nMathQns) {this.nMathQns = nMathQns;}
+    public void setMathDifficulty(int nMathDifficulty) {this.nMathDifficulty = nMathDifficulty;}
 
     public void setSleepDur(int nSleepDur) {this.nSleepDur = nSleepDur;}
 

@@ -148,10 +148,10 @@ public class PongGameActivity extends Activity {
 
         // I suppose this function is repeatedly called every idk how many ms???
         public void updateCourt() {
-            if (racketIsMovingRight) {
+            if (racketIsMovingRight && racketPosition.x + racketWidth/2 < screenWidth) {
                 racketPosition.x += 10;
             }
-            if (racketIsMovingLeft) {
+            if (racketIsMovingLeft && racketPosition.x - racketWidth/2 > 0) {
                 racketPosition.x -= 10;
             }
 
