@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Notifications" />
+        <CheckBoxPreference android:title="Next Alarm Persistence"
+            android:summary="If checked, show notification for next alarm."
+            android:key="preference_persistent_notification"
+            android:defaultValue="false"/>
+        <CheckBoxPreference android:title="Sleep Reminder"
+            android:summary="If checked, reminder will notify you to sleep."
+            android:key="preference_sleep_notification"
+            android:defaultValue="true"/>
+    <PreferenceCategory android:title="Appearance" />
+
+</PreferenceScreen>

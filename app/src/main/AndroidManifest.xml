@@ -9,7 +9,8 @@
         android:icon="@drawable/ic_alarm"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:screenOrientation="portrait">
 
         <activity
             android:name=".MainAlarm"
@@ -22,32 +23,32 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
-
         </activity>
 
         <activity
             android:name=".InputAlarm"
             android:label="@string/input_alarm_name"
-            android:parentActivityName=".MainAlarm"/>
+            android:parentActivityName=".MainAlarm"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".MainPreference"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainAlarm" />
 
         <activity
             android:name=".AlarmWake"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".MathGameActivity"
             android:parentActivityName=".AlarmWake"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".PongGameActivity"
             android:parentActivityName=".AlarmWake"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".RingtoneService"

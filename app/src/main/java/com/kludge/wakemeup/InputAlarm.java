@@ -101,8 +101,6 @@ public class InputAlarm extends AppCompatActivity {
         */
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_input_alarm, menu);
@@ -117,9 +115,15 @@ public class InputAlarm extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.menu_done:
                 sendAlarm();
+                break;
+            case android.R.id.home:
+                finish();
+                break;
             default:
-                return true;
+                return false;
         }
+
+        return true;
     }
 
     public static class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{

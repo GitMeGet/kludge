@@ -5,12 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,12 +40,16 @@ public class MainAlarm extends AppCompatActivity {
     static final int ID_NOTIFICATION_ALARM = 100;
     static final int ID_NOTIFICATION_SLEEP = 101;
 
+    // alarms
     static ArrayList<AlarmDetails> alarms; //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
     static AlarmAdapter alarmAdapter; //arrayAdapter for the ListView
 
     // for notifications
     private static Context mContext; // not sure if this is a good idea???
     private static NotificationManager notificationManager;
+
+    //shared preferences
+    private SharedPreferences sharedPrefs;
 
     protected static void createNotification(int type, AlarmDetails alarm) {
 
@@ -106,8 +112,17 @@ public class MainAlarm extends AppCompatActivity {
 
                 break;
         }
+    }
 
-
+    protected static void destroyNotificaton(int type, AlarmDetails alarm) {
+        switch(type){
+            case ID_NOTIFICATION_ALARM:
+                notificationManager.cancel(ID_NOTIFICATION_ALARM);
+                break;
+            case ID_NOTIFICATION_SLEEP:
+                notificationManager.cancel(ID_NOTIFICATION_SLEEP);
+                break;
+        }
     }
 
     @Override
@@ -115,10 +130,15 @@ public class MainAlarm extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alarm);
 
+        sharedPrefs = getSharedPreferences("preferences_main", MODE_PRIVATE);
+
         // for notifications
         mContext = this;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        createNotification(ID_NOTIFICATION_ALARM, null);
+
+        if(sharedPrefs.getBoolean("preference_persistent_notification", false)) {
+            createNotification(ID_NOTIFICATION_ALARM, null);
+        }
 
         //initialise alarmManager
         //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -232,7 +252,8 @@ public class MainAlarm extends AppCompatActivity {
         AlarmLab.get(getApplicationContext()).saveAlarms();
 
         // update persistent notification
-        createNotification(ID_NOTIFICATION_ALARM, alarm);
+        if(sharedPrefs.getBoolean("preference_persistent_notification", false))
+            createNotification(ID_NOTIFICATION_ALARM, alarm);
 
         alarmAdapter.notifyDataSetChanged();
     }
@@ -290,9 +311,15 @@ public class MainAlarm extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.menu_plus:
                 requestAddAlarm();
+                break;
+            case R.id.menu_settings:
+                Intent intent = new Intent(getApplicationContext(), MainPreference.class);
+                startActivity(intent);
+                break;
             default:
                 return false;
         }
+        return true;
     }
 }
 
