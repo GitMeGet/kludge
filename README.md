@@ -1,3 +1,5 @@
+**'Wake Me Up!'** [![Build Status](https://travis-ci.org/Syltaris/kludge.svg?branch=master)](https://travis-ci.org/Syltaris/kludge)
+
 Team Name
 -----------
 Team Kludge
