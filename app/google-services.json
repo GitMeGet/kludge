@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "1067216090991",
+    "project_id": "firebase-kludge"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067216090991:android:43391e6a11c771b2",
+        "android_client_info": {
+          "package_name": "com.kludge.wakemeup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-cnFmVZ7R5UPNvSL7PcmAuopZ_hIfENw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

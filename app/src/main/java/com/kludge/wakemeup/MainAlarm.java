@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -129,6 +129,16 @@ public class MainAlarm extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alarm);
+
+        Button button_gcm = (Button) findViewById(R.id.button_gcm);
+        assert button_gcm != null;
+        button_gcm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), RegisterGCM.class);
+                startActivity(i);
+            }
+        });
 
         sharedPrefs = getSharedPreferences("preferences_main", MODE_PRIVATE);
 
