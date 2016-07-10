@@ -39,7 +39,8 @@ public class InputAlarm extends AppCompatActivity {
         fragmentTransaction.add(android.R.id.content, settingsFragment, "SETTINGS_FRAGMENT");
         fragmentTransaction.commit();
 
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //sharedPrefs.edit().clear().apply();
 
         alarmId = getIntent().getLongExtra("alarmId", -1);
 
@@ -116,7 +117,7 @@ public class InputAlarm extends AppCompatActivity {
             case R.id.menu_done:
                 sendAlarm();
                 break;
-            case android.R.id.home:
+            case android.R.id.home: //reject changes
                 finish();
                 break;
             default:
@@ -178,22 +179,6 @@ public class InputAlarm extends AppCompatActivity {
     }
 
     private void sendAlarm(){
-
-        //update sharedPrefs here before putting in
-        //prefEditor.putString("preference_alarm_name", "Alarm Name");
-        //prefEditor.putBoolean("preference_alarm_repeat", false);
-
-        //prefEditor.apply();
-        /*
-        EditText viewAlarmName = ((EditText) findViewById(R.id.alarm_name));
-        assert viewAlarmName != null;
-        String alarmName = viewAlarmName.getText().toString();
-
-        TimePicker viewTimePicker = ((TimePicker) findViewById(R.id.time_picker));
-        assert viewTimePicker != null;
-
-        */
-
         SharedPreferences.Editor prefEditor = sharedPrefs.edit();
 
         alarmId = getIntent().getLongExtra("alarmId", -1);
@@ -216,9 +201,6 @@ public class InputAlarm extends AppCompatActivity {
         data.putExtra("sleepdur", Integer.parseInt(sharedPrefs.getString("preference_sleep_duration", "6")));
 
         setResult(MainAlarm.RESULT_OK, data);
-
-        prefEditor.clear();
-        prefEditor.apply();
 
         finish();
     }
