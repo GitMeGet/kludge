@@ -23,7 +23,7 @@ import java.text.NumberFormat;
 public class InputAlarm extends AppCompatActivity {
 
     long alarmId;
-    SharedPreferences sharedPrefs;
+    static SharedPreferences sharedPrefs;
     SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
     @Override
@@ -31,20 +31,14 @@ public class InputAlarm extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_alarm);
 
-        //sets up Preferences fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        SettingsFragment settingsFragment = new SettingsFragment();
-        fragmentTransaction.add(android.R.id.content, settingsFragment, "SETTINGS_FRAGMENT");
-        fragmentTransaction.commit();
-
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         alarmId = getIntent().getLongExtra("alarmId", -1);
 
         // initialise preferences if editing existing alarm
         if (alarmId != -1){
+
+            Log.i("InputAlarm", "do");
 
             SharedPreferences.Editor editor = sharedPrefs.edit();
             AlarmDetails alarm = AlarmLab.get(getBaseContext()).getAlarmDetails(alarmId);
@@ -58,11 +52,27 @@ public class InputAlarm extends AppCompatActivity {
 
             editor.putString("preference_game_type", ""+alarm.getGame());
             editor.putString("preference_game_mathqns", ""+alarm.getMathQns());
+            editor.putString("preference_game_mathdifficulty", ""+alarm.getMathDifficulty());
 
             editor.putString("preference_sleep_duration", ""+alarm.getSleepDur());
 
             editor.apply();
         }
+
+        else{
+            // set defaults
+            PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.alarm_preferences, false);
+        }
+
+
+        //sets up Preferences fragment
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        SettingsFragment settingsFragment = new SettingsFragment();
+        fragmentTransaction.add(android.R.id.content, settingsFragment, "SETTINGS_FRAGMENT");
+        fragmentTransaction.commit();
+
 
         /*
          //todo:fix updating summary
@@ -158,6 +168,8 @@ public class InputAlarm extends AppCompatActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             Log.i("changed"," called");
+
+
             switch(key){
                 case "preference_alarm_name":
                     EditTextPreference prefName = (EditTextPreference) findPreference(key);
@@ -216,9 +228,6 @@ public class InputAlarm extends AppCompatActivity {
         data.putExtra("sleepdur", Integer.parseInt(sharedPrefs.getString("preference_sleep_duration", "6")));
 
         setResult(MainAlarm.RESULT_OK, data);
-
-        prefEditor.clear();
-        prefEditor.apply();
 
         finish();
     }

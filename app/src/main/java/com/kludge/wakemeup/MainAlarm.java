@@ -37,8 +37,8 @@ public class MainAlarm extends AppCompatActivity {
     static final int ID_CONTEXT_EDIT = 200;
     static final int ID_CONTEXT_DELETE = 201;
 
-    static final int ID_NOTIFICATION_ALARM = 100;
-    static final int ID_NOTIFICATION_SLEEP = 101;
+    static final int ID_NOTIFICATION_ALARM = 300;
+    static final int ID_NOTIFICATION_SLEEP = 301;
 
     // alarms
     static ArrayList<AlarmDetails> alarms; //array containing DESCRIPTION OF ALARMS? !!!! MUST IT BE STATIC???
@@ -59,17 +59,17 @@ public class MainAlarm extends AppCompatActivity {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
         Notification notification;
 
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMinimumIntegerDigits(2);
+
+
         switch (type) {
             case ID_NOTIFICATION_ALARM:
                 String time = "No Alarm";
 
                 AlarmDetails earliestAlarm = AlarmLab.get(mContext).getEarliestAlarm();
                 if (earliestAlarm != null) {
-                    time = "Next Alarm: " + earliestAlarm.getHour() + ":";
-                    if (earliestAlarm.getMin() < 10){
-                        time += "0";
-                    }
-                    time += earliestAlarm.getMin();
+                    time = "Next Alarm: " + earliestAlarm.getHour() + ":" + nf.format(alarm.getMin());
                 }
 
                 mBuilder.setContentTitle(time)
@@ -87,9 +87,7 @@ public class MainAlarm extends AppCompatActivity {
                 double hoursToAlarm = (alarm.getTimeInMillis() - System.currentTimeMillis()) * (2.77778e-7);
                 double minsToAlarm = (hoursToAlarm - (int)hoursToAlarm) * 60;
                 String minutesToAlarm = String.format("%.0f", minsToAlarm);
-                if (minsToAlarm < 10){
-                    minutesToAlarm = '0' + minutesToAlarm;
-                }
+
                 String hTA = "Time till wake: " + (int)hoursToAlarm + "hrs "
                         + minutesToAlarm + "mins";
 
@@ -130,12 +128,13 @@ public class MainAlarm extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alarm);
 
+        // SOON TO BE REMOVED TO MENU BAR
         Button button_gcm = (Button) findViewById(R.id.button_gcm);
         assert button_gcm != null;
         button_gcm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), RegisterGCM.class);
+                Intent i = new Intent(getApplicationContext(), GCMRegisterActivity.class);
                 startActivity(i);
             }
         });
@@ -149,9 +148,6 @@ public class MainAlarm extends AppCompatActivity {
         if(sharedPrefs.getBoolean("preference_persistent_notification", false)) {
             createNotification(ID_NOTIFICATION_ALARM, null);
         }
-
-        //initialise alarmManager
-        //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         // initialise alarms ArrayList if empty, else load from FILE
         alarms = AlarmLab.get(getApplicationContext()).getAlarms();
@@ -188,8 +184,6 @@ public class MainAlarm extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case ID_CONTEXT_EDIT:
-                //todo: create edit alarm functionality
-
                 // unregister alarm with alarm manager
                 alarm.registerAlarmIntent(this, AlarmDetails.CANCEL_ALARM);
 
@@ -198,7 +192,6 @@ public class MainAlarm extends AppCompatActivity {
 
                 startActivityForResult(addAlarm, ID_EDIT_ALARM);
 
-                // register new alarm with alarm manager
                 return super.onContextItemSelected(item);
             case ID_CONTEXT_DELETE:
                 alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.CANCEL_ALARM);
@@ -296,6 +289,8 @@ public class MainAlarm extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
 
         //restore info by taking it out eg. var = savedInstanceState.getString("key");
+
+
     }
 
     @Override
@@ -364,7 +359,7 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
                 alarm.toggleOnState();
 
                 // update persistent notification
-                MainAlarm.createNotification(0,null);
+                MainAlarm.createNotification(MainAlarm.ID_NOTIFICATION_ALARM,null);
 
                 //checks the pendingIntent for the alarm
                 if (alarm.isOnState())

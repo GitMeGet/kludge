@@ -48,17 +48,17 @@ public class GCMRegistrationIntentService extends IntentService {
             // [START register_for_gcm]
             // Initially this call goes out to the network to retrieve the token, subsequent calls
             // are local.
-            // R.string.gcm_defaultSenderId (the Sender ID) is typically derived from google-services.json.
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
             InstanceID instanceID = InstanceID.getInstance(this);
-            String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
+            String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId), // R.string.gcm_defaultSenderId (the Sender ID) is typically derived from google-services.json.
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
 
-            // TODO: Implement this method to send any registration to your app's servers.
-            sendRegistrationToServer(token);
+            // register userId and token with backend server
+            String userId = intent.getStringExtra("userId");
+            sendRegistrationToServer(userId, token);
 
             // Subscribe to topic channels
             subscribeTopics(token);
@@ -87,10 +87,12 @@ public class GCMRegistrationIntentService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) {
+
+    // sends userId/token pair to backend server
+    private void sendRegistrationToServer(String userId, String token) {
 
         new ServletPostAsyncTask().execute(new GCMParams(
-                getApplicationContext(), "token", token, "", "")
+                getApplicationContext(), "saveToken", userId, token, "", "")
         );
 
     }
@@ -110,11 +112,12 @@ public class GCMRegistrationIntentService extends IntentService {
     }
     // [END subscribe_topics]
 
-    public class ServletPostAsyncTask extends AsyncTask<GCMParams, Void, String> {
+    public static class ServletPostAsyncTask extends AsyncTask<GCMParams, Void, String> {
         private Context context;
         String type;
         String token;
-        String id;
+        String userId;
+        String targetId;
         String text;
 
         @Override
@@ -122,12 +125,13 @@ public class GCMRegistrationIntentService extends IntentService {
             context = params[0].mContext;
             type = params[0].type;
             token = params[0].token;
-            id = params[0].id;
+            userId = params[0].userId;
+            targetId = params[0].targetId;
             text = params[0].text;
 
             try {
                 // Set up the request
-                // URL url = new URL("http://10.0.2.2:8080/hello");
+                //URL url = new URL("http://10.0.2.2:8080/hello");
                 URL url = new URL("http://testbackend-1355.appspot.com/hello");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
@@ -138,7 +142,8 @@ public class GCMRegistrationIntentService extends IntentService {
                 Map<String, String> nameValuePairs = new HashMap<>();
                 nameValuePairs.put("type", type);
                 nameValuePairs.put("token", token);
-                nameValuePairs.put("id", id);
+                nameValuePairs.put("userId", userId);
+                nameValuePairs.put("targetId", targetId);
                 nameValuePairs.put("text", text);
                 String postParams = buildPostDataString(nameValuePairs);
 

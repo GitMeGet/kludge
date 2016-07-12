@@ -7,19 +7,20 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText_username"/>
+        android:id="@+id/userIdEditText"
+        android:hint="Enter User ID"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button_save_username"/>
+        android:text="Save User ID"
+        android:id="@+id/saveUserIdButton"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Display info"
+        android:text="Log info"
         android:id="@+id/informationTextView"/>
 
     <ProgressBar
@@ -28,4 +29,16 @@
         android:layout_height="wrap_content"
         android:id="@+id/registrationProgressBar"
         android:indeterminate="false"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/targetIdEditText"
+        android:hint="Enter Target User ID"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/requestTargetIdButton"
+        android:text="SEND REQUEST TO TARGET ID"/>
 </LinearLayout>

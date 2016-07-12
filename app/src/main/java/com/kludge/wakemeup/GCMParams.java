@@ -9,15 +9,17 @@ public class GCMParams {
 
     public Context mContext;
     public String type;
+    public String userId;
     public String token;
-    public String id;
+    public String targetId;
     public String text;
 
-    public GCMParams(Context context, String type, String token, String id, String text){
+    public GCMParams(Context context, String type, String userId, String token, String targetId, String text){
         mContext = context;
         this.type = type;
+        this.userId = userId;
         this.token = token;
-        this.id = id;
+        this.targetId = targetId;
         this.text = text;
     }
 

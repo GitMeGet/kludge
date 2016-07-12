@@ -59,7 +59,7 @@
         <receiver android:name=".NotificationReceiver"/>
 
         <activity
-            android:name=".RegisterGCM">
+            android:name=".GCMRegisterActivity">
         </activity>
 
         <!-- [START gcm_receiver] -->
@@ -69,7 +69,8 @@
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="gcm.play.android.samples.com.gcmquickstart" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="com.kludge.wakemeup" />
             </intent-filter>
         </receiver>
         <!-- [END gcm_receiver] -->
@@ -99,6 +100,11 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
+        </service>
+
+        <service
+            android:name=".GCMResponseService"
+            android:exported="false">
         </service>
 
     </application>

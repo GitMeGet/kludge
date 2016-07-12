@@ -15,9 +15,12 @@ import com.google.android.gms.gcm.GcmListenerService;
 /**
  * Created by Yu Peng on 7/7/2016.
  */
-public class GCMListenerService extends GcmListenerService{
+public class GCMListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
+    public static final int RESPONSE_NOTIFICATION_ID = 7;
+    public static final int REQUEST_NOTIFICATION_ID = 17;
+
 
     /**
      * Called when message is received.
@@ -30,6 +33,8 @@ public class GCMListenerService extends GcmListenerService{
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String message = data.getString("message");
+        String requestId = data.getString("requestId");
+
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
 
@@ -47,11 +52,17 @@ public class GCMListenerService extends GcmListenerService{
          *     - Update UI.
          */
 
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
-        sendNotification(message);
+        switch (message) {
+            case "requestTarget":
+                sendRequestNotification(requestId);
+                break;
+            case "requestAccepted":
+                sendResponseNotification(message);
+                break;
+            case "requestRejected":
+                sendResponseNotification(message);
+                break;
+        }
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -61,7 +72,8 @@ public class GCMListenerService extends GcmListenerService{
      *
      * @param message GCM message received.
      */
-    private void sendNotification(String message) {
+    private void sendResponseNotification(String message) {
+
         Intent intent = new Intent(this, MainAlarm.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -79,10 +91,40 @@ public class GCMListenerService extends GcmListenerService{
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(RESPONSE_NOTIFICATION_ID, notificationBuilder.build());
     }
 
+    private void sendRequestNotification(String requestId) {
 
+        Intent i1 = new Intent(this, GCMResponseService.class);
+        i1.putExtra("requestId", requestId);
+        i1.putExtra("response", "yes");
+        PendingIntent yesIntent = PendingIntent.getService(this, 227, i1, PendingIntent.FLAG_ONE_SHOT);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
+                .setContentTitle("Tom requests for your services")
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .addAction(R.drawable.common_google_signin_btn_icon_dark,
+                        "Yes",
+                        yesIntent);
+
+        Intent i2 = new Intent(this, GCMResponseService.class);
+        i2.putExtra("requestId", requestId);
+        i2.putExtra("response", "no");
+        PendingIntent noIntent = PendingIntent.getService(this, 117, i2, PendingIntent.FLAG_ONE_SHOT);
+
+        notificationBuilder.addAction(R.drawable.common_google_signin_btn_icon_dark,
+                "No",
+                noIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(REQUEST_NOTIFICATION_ID, notificationBuilder.build());
+    }
 
 
 }

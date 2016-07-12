@@ -10,6 +10,9 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -19,7 +22,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 /*
  * Created by Yu Peng on 7/7/2016.
  */
-public class RegisterGCM extends AppCompatActivity {
+public class GCMRegisterActivity extends AppCompatActivity {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
@@ -29,10 +32,12 @@ public class RegisterGCM extends AppCompatActivity {
     private TextView mInformationTextView;
     private boolean isReceiverRegistered;
 
+    public static String userId; // make sure to save userId
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.register_gcm);
+        setContentView(R.layout.activity_register_gcm);
 
         mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
@@ -52,14 +57,42 @@ public class RegisterGCM extends AppCompatActivity {
         };
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
-        // Registering BroadcastReceiver
+        // Registering BroadcastReceiver to receive if GCMRegistrationService is successful
         registerReceiver();
 
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, GCMRegistrationIntentService.class);
-            startService(intent);
-        }
+        Button mSaveUserIdButton = (Button) findViewById(R.id.saveUserIdButton);
+        assert mSaveUserIdButton != null;
+        mSaveUserIdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkPlayServices()) {
+                    // Start IntentService to register this application with GCM.
+                    Intent intent = new Intent(getApplicationContext(), GCMRegistrationIntentService.class);
+
+                    // add username to intent extra
+                    EditText mUserIdEditText = (EditText) findViewById(R.id.userIdEditText);
+                    assert mUserIdEditText != null;
+                    userId = mUserIdEditText.getText().toString();
+                    intent.putExtra("userId", userId);
+
+                    startService(intent);
+                }
+            }
+        });
+
+        Button mRequestTargetIdButton = (Button) findViewById(R.id.requestTargetIdButton);
+        assert mRequestTargetIdButton != null;
+        mRequestTargetIdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText mTargetIdEditText = (EditText) findViewById(R.id.targetIdEditText);
+                assert mTargetIdEditText != null;
+                String targetId = mTargetIdEditText.getText().toString();
+                new GCMRegistrationIntentService.ServletPostAsyncTask().execute(new GCMParams(
+                        getApplicationContext(), "requestTarget", userId , "", targetId, ""));
+            }
+        });
+
     }
 
     @Override
