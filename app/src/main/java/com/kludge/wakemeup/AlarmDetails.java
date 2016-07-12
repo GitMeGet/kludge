@@ -182,7 +182,8 @@ public class AlarmDetails {
                     lTimeInMillis = getTimeInMillis() + (long) 8.64e+7;                        // update timeInMillis to one-day-later's time
                 }
                 updateAlarmIntent(context, alarmPI);
-                updateSleepNotification(context, notifPI);
+                if(context.getSharedPreferences("preferences_main", Context.MODE_PRIVATE).getBoolean("preference_sleep_notification", false))
+                    updateSleepNotification(context, notifPI);
                 break;
             case CANCEL_ALARM:
                 alarmManager.cancel(alarmPI);

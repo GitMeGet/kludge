@@ -2,6 +2,7 @@ package com.kludge.wakemeup;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -13,6 +14,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -39,6 +42,38 @@ public class MainPreference extends AppCompatActivity {
         fragmentTransaction.commit();
 
         sharedPrefs = getSharedPreferences("preferences_main", MODE_PRIVATE);
+        PreferenceManager.setDefaultValues(this, "preferences_main", Context.MODE_PRIVATE, R.xml.main_preferences, false);
+    }
+
+    //borrow input_alarm's MENU
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_input_alarm, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        switch(item.getItemId()){
+            case R.id.menu_done:
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+
+                editor.putBoolean("preference_persistent_notification", false);
+                editor.putBoolean("preference_sleep_notification", true);
+
+                editor.apply();
+                finish();
+                break;
+            case android.R.id.home: //reject changes
+                finish();
+                break;
+            default:
+                return false;
+        }
+
+        return true;
     }
 
     public static class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{
@@ -84,7 +119,9 @@ public class MainPreference extends AppCompatActivity {
                     break;
                 case "preference_sleep_notification":
                     CheckBoxPreference prefSleep = (CheckBoxPreference) findPreference(key);
-                    if(!prefSleep.isChecked())
+                    if(prefSleep.isChecked());
+
+                    else
                         MainAlarm.destroyNotificaton(MainAlarm.ID_NOTIFICATION_SLEEP, null);
             }
         }
