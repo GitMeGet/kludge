@@ -195,9 +195,9 @@ public class AlarmDetails {
                 break;
             case SNOOZE_ALARM:
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, getTimeInMillis() + nSnooze * 60000, alarmPI);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nSnooze * 60000, alarmPI);
                 else
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, getTimeInMillis() + nSnooze * 60000, alarmPI);
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nSnooze * 60000, alarmPI);
                 break;
         }
     }

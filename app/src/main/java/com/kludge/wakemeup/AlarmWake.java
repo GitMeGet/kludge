@@ -7,6 +7,7 @@ import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class AlarmWake extends AppCompatActivity {
@@ -17,6 +18,8 @@ public class AlarmWake extends AppCompatActivity {
     public PowerManager.WakeLock wakeLock;
 
     Intent ringService;
+
+    UserManager userManager;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -44,6 +47,8 @@ public class AlarmWake extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_wake);
 
+        userManager = new UserManager(getApplicationContext());
+
         final Context c = getApplicationContext();
         long alarmId = getIntent().getLongExtra("alarmId", 0);
         alarm = AlarmLab.get(c).getAlarmDetails(alarmId);
@@ -61,6 +66,10 @@ public class AlarmWake extends AppCompatActivity {
         ringService.putExtra("ringtone", alarm.getRingtone());
         startService(ringService);
 
+        final TextView userScore = (TextView) findViewById(R.id.view_user_score);
+        assert userScore != null;
+        userScore.setText("You have "+userManager.getScore()+(userManager.getScore()==1?" point.":" points."));
+
         Button buttDismiss = (Button) findViewById(R.id.butt_dismiss);
         assert buttDismiss != null;
         buttDismiss.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +77,9 @@ public class AlarmWake extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent i;
+
+                userManager.increaseScore(UserManager.SCORE_THRESHOLD - userManager.getSnooze());
+                userManager.resetSnooze();
 
                 switch(alarm.getGame()){
                     case AlarmDetails.GAME_DISABLED:
@@ -90,22 +102,34 @@ public class AlarmWake extends AppCompatActivity {
 
         Button buttonSnooze = (Button) findViewById(R.id.butt_snooze_alarm);
         assert buttonSnooze != null;
+
+        if(userManager.getScore() <= 0){
+            buttonSnooze.setTextColor(getColor(R.color.colorLightGrey)); //set font to light grey colour
+        }
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //cancel RingtoneService and PendingIntent
-                stopService(ringService);
+                if(userManager.getScore() <= 0) { //disable the snooze button if not enough points
+                    Toast.makeText(getApplicationContext(), ("You don't have enough points!"), Toast.LENGTH_SHORT).show();
 
-                // re-register snoozed alarm
-                alarm.registerAlarmIntent(c, AlarmDetails.SNOOZE_ALARM);
+                }
+                else{
+                    //cancel RingtoneService and PendingIntent
+                    stopService(ringService);
 
-                Toast.makeText(getApplicationContext(), ("Alarm will ring in " + alarm.getnSnooze() + " minutes"), Toast.LENGTH_SHORT).show();
+                    userManager.decreaseScore(UserManager.SNOOZE_PRICE);
+
+                    // re-register snoozed alarm
+                    alarm.registerAlarmIntent(c, AlarmDetails.SNOOZE_ALARM);
+
+                    Toast.makeText(getApplicationContext(), ("Alarm will ring in " + alarm.getnSnooze() + " minutes"), Toast.LENGTH_SHORT).show();
 
 
-                // release wake_lock
-                wakeLock.release();
+                    // release wake_lock
+                    wakeLock.release();
 
-                finish();
+                    finish();
+                }
             }
         });
     }
