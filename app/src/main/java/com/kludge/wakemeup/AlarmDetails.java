@@ -28,6 +28,7 @@ public class AlarmDetails {
     private int nMathQns;
     private int nMathDifficulty;
     private int nSleepDur;
+    private String targetId;
 
     //create alarm ID
     private long mId;
@@ -56,6 +57,7 @@ public class AlarmDetails {
     private static final String JSON_GAME = "game";
     private static final String JSON_MATHQNS = "mathqns";
     private static final String JSON_SLEEPDUR = "sleepdur";
+    private static final String JSON_TARGETID = "targetId";
 
     public AlarmDetails(int nHour, int nMin, String strName, boolean bRepeat, int nSnooze,
                         String uriRingtone, int nGame, int nMathQns, int nMathDifficulty, int nSleepDur) {
@@ -99,6 +101,8 @@ public class AlarmDetails {
         nMathQns = json.getInt(JSON_MATHQNS);
 
         nSleepDur = json.getInt(JSON_SLEEPDUR);
+
+        targetId = json.getString(JSON_TARGETID);
     }
 
     // converts AlarmDetails.java  to a JSON object
@@ -120,6 +124,8 @@ public class AlarmDetails {
         json.put(JSON_MATHQNS, nMathQns);
 
         json.put(JSON_SLEEPDUR, nSleepDur);
+
+        json.put(JSON_TARGETID, targetId);
 
         return json;
     }
@@ -237,6 +243,8 @@ public class AlarmDetails {
 
     public int getSleepDur() {return nSleepDur;}
 
+    public String getTargetId(){return targetId;}
+
 
     //setters
     public void setName(String strName) {
@@ -274,5 +282,7 @@ public class AlarmDetails {
     public void setMathDifficulty(int nMathDifficulty) {this.nMathDifficulty = nMathDifficulty;}
 
     public void setSleepDur(int nSleepDur) {this.nSleepDur = nSleepDur;}
+
+    public void setTargetId(String targetId) {this.targetId = targetId;}
 
 }

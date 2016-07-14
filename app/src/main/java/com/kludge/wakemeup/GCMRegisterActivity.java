@@ -33,6 +33,8 @@ public class GCMRegisterActivity extends AppCompatActivity {
     private TextView mInformationTextView;
     private boolean isReceiverRegistered;
 
+    private AlarmDetails alarm;
+
     public static String userId; // make sure to save userId
     public static String targetId; // save targetId too!
 
@@ -67,7 +69,7 @@ public class GCMRegisterActivity extends AppCompatActivity {
 
         // get alarm from AlarmLab
         long alarmId = getIntent().getLongExtra("alarmId", -1);
-        AlarmDetails alarm = AlarmLab.get(getApplicationContext()).getAlarmDetails(alarmId);
+        alarm = AlarmLab.get(getApplicationContext()).getAlarmDetails(alarmId);
 
         mUserIdEditText =(EditText) findViewById(R.id.userIdEditText);
         mTargetIdEditText = (EditText) findViewById(R.id.targetIdEditText);
