@@ -4,20 +4,22 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
-/**
+/*
  * Created by Yu Peng on 7/7/2016.
  */
 public class GCMListenerService extends GcmListenerService {
 
-    private static final String TAG = "MyGcmListenerService";
+    private static final String TAG = "GCMListenerService";
     public static final int RESPONSE_NOTIFICATION_ID = 7;
     public static final int REQUEST_NOTIFICATION_ID = 17;
 
@@ -29,14 +31,23 @@ public class GCMListenerService extends GcmListenerService {
      * @param data Data bundle containing message data as key/value pairs.
      *             For Set of keys use data.keySet().
      */
-    // [START receive_message]
+
+    /**
+     * Production applications would usually process the message here.
+     * Eg: - Syncing with server.
+     *     - Store message in local database.
+     *     - Update UI.
+     */
+
+
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
+        String messageType = data.getString("messageType");
         String requestId = data.getString("requestId");
+        String message = data.getString("message");
 
         Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
+        Log.d(TAG, "Message: " + messageType);
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -44,35 +55,40 @@ public class GCMListenerService extends GcmListenerService {
             // normal downstream message.
         }
 
-        // [START_EXCLUDE]
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
-
-        switch (message) {
+        assert messageType != null;
+        switch (messageType) {
             case "requestTarget":
                 sendRequestNotification(requestId);
                 break;
             case "requestAccepted":
-                sendResponseNotification(message);
+
+                // saves targetId in SharedPrefs
+                SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("targetId", requestId);
+                editor.apply();
+
+                sendResponseNotification(messageType);
                 break;
             case "requestRejected":
-                sendResponseNotification(message);
+                sendResponseNotification(messageType);
+                break;
+            case "incomingP2PMessage":
+                // Notify MessagingFragment of new incoming message
+                Intent newMessage = new Intent("incomingP2PMessage");
+                newMessage.putExtra("message", message);
+                boolean b = LocalBroadcastManager.getInstance(this).sendBroadcast(newMessage);
+
+                Log.d(TAG, "sent broadcast" + " " + b);
+
                 break;
         }
-        // [END_EXCLUDE]
     }
-    // [END receive_message]
 
-    /**
-     * Create and show a simple notification containing the received GCM message.
-     *
-     * @param message GCM message received.
-     */
-    private void sendResponseNotification(String message) {
+    private void sendResponseNotification(String messageType) {
+
+        System.out.println(getSharedPreferences("preferences_user", MODE_PRIVATE).getString("targetId", ""));
+        Log.d("GCMListenerService1", getSharedPreferences("preferences_user", MODE_PRIVATE).getString("targetId", ""));
 
         Intent intent = new Intent(this, MainAlarm.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -83,7 +99,7 @@ public class GCMListenerService extends GcmListenerService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
                 .setContentTitle("GCM Message")
-                .setContentText(message)
+                .setContentText(messageType)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
@@ -99,6 +115,7 @@ public class GCMListenerService extends GcmListenerService {
         Intent i1 = new Intent(this, GCMResponseService.class);
         i1.putExtra("requestId", requestId);
         i1.putExtra("response", "yes");
+        // using FLAG_ONE_SHOT only allows this particular PendingIntent to be used once
         PendingIntent yesIntent = PendingIntent.getService(this, 227, i1, PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

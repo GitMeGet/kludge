@@ -3,8 +3,14 @@
           package="com.kludge.wakemeup">
 
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <!--  Internet Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission
+        android:name="com.kludge.wakemeup.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.kludge.wakemeup.permission.C2D_MESSAGE" />
 
     <application
         android:allowBackup="true"
@@ -52,13 +58,17 @@
             android:parentActivityName=".AlarmWake"
             android:screenOrientation="portrait" />
 
+        <service
+            android:name=".RingtoneService"
+            android:enabled="true"
+            android:exported="true"/>
+
+        <receiver android:name=".AlarmReceiver"/>
+        <receiver android:name=".NotificationReceiver"/>
 
         <activity
             android:name=".GCMRegisterActivity">
         </activity>
-
-        <receiver android:name=".AlarmReceiver"/>
-        <receiver android:name=".NotificationReceiver"/>
 
         <!-- [START gcm_receiver] -->
         <receiver
@@ -77,7 +87,7 @@
         <service
             android:name=".GCMListenerService"
             android:exported="false" >
-            <intent-filter>
+            <intent-filter android:priority="10000">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
@@ -95,9 +105,6 @@
         <service
             android:name=".GCMRegistrationIntentService"
             android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
         </service>
 
         <service
@@ -105,10 +112,8 @@
             android:exported="false">
         </service>
 
-        <service
-            android:name=".RingtoneService"
-            android:enabled="true"
-            android:exported="true"/>
+        <activity android:name=".MessagingActivity">
+        </activity>
 
     </application>
 

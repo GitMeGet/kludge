@@ -28,7 +28,7 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
-/**
+/*
  * Created by Yu Peng on 7/7/2016.
  */
 public class GCMRegistrationIntentService extends IntentService {
@@ -118,7 +118,7 @@ public class GCMRegistrationIntentService extends IntentService {
         String token;
         String userId;
         String targetId;
-        String text;
+        String message;
 
         @Override
         protected String doInBackground(GCMParams... params) {
@@ -127,7 +127,7 @@ public class GCMRegistrationIntentService extends IntentService {
             token = params[0].token;
             userId = params[0].userId;
             targetId = params[0].targetId;
-            text = params[0].text;
+            message = params[0].message;
 
             try {
                 // Set up the request
@@ -144,7 +144,7 @@ public class GCMRegistrationIntentService extends IntentService {
                 nameValuePairs.put("token", token);
                 nameValuePairs.put("userId", userId);
                 nameValuePairs.put("targetId", targetId);
-                nameValuePairs.put("text", text);
+                nameValuePairs.put("message", message);
                 String postParams = buildPostDataString(nameValuePairs);
 
                 // Execute HTTP Post

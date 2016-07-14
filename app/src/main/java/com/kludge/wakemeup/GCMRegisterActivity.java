@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -25,7 +26,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 public class GCMRegisterActivity extends AppCompatActivity {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "GCMRegisterActivity";
 
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private ProgressBar mRegistrationProgressBar;
@@ -33,6 +34,10 @@ public class GCMRegisterActivity extends AppCompatActivity {
     private boolean isReceiverRegistered;
 
     public static String userId; // make sure to save userId
+    public static String targetId; // save targetId too!
+
+    EditText mUserIdEditText;
+    EditText mTargetIdEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,18 +65,35 @@ public class GCMRegisterActivity extends AppCompatActivity {
         // Registering BroadcastReceiver to receive if GCMRegistrationService is successful
         registerReceiver();
 
+        // get alarm from AlarmLab
+        long alarmId = getIntent().getLongExtra("alarmId", -1);
+        AlarmDetails alarm = AlarmLab.get(getApplicationContext()).getAlarmDetails(alarmId);
+
+        mUserIdEditText =(EditText) findViewById(R.id.userIdEditText);
+        mTargetIdEditText = (EditText) findViewById(R.id.targetIdEditText);
+
+        // if user had previously entered userId, show it
+        userId = getSharedPreferences("preferences_user", MODE_PRIVATE).getString("userId", "");
+        mUserIdEditText.setText(userId);
+
+        // if user had previously entered targetId, show it
+        targetId = getSharedPreferences("preferences_user", MODE_PRIVATE).getString("targetId", "");
+        mTargetIdEditText.setText(targetId);
+
         Button mSaveUserIdButton = (Button) findViewById(R.id.saveUserIdButton);
         assert mSaveUserIdButton != null;
         mSaveUserIdButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkPlayServices()) {
+                    // make sure userId field is filled
+                    if (!validateInputs(1))
+                        return;
+
                     // Start IntentService to register this application with GCM.
                     Intent intent = new Intent(getApplicationContext(), GCMRegistrationIntentService.class);
 
                     // add username to intent extra
-                    EditText mUserIdEditText = (EditText) findViewById(R.id.userIdEditText);
-                    assert mUserIdEditText != null;
                     userId = mUserIdEditText.getText().toString();
                     intent.putExtra("userId", userId);
 
@@ -85,14 +107,46 @@ public class GCMRegisterActivity extends AppCompatActivity {
         mRequestTargetIdButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText mTargetIdEditText = (EditText) findViewById(R.id.targetIdEditText);
-                assert mTargetIdEditText != null;
-                String targetId = mTargetIdEditText.getText().toString();
+                // make sure both input fields are filled
+                if (!validateInputs(2))
+                    return;
+
+                targetId = mTargetIdEditText.getText().toString();
+
                 new GCMRegistrationIntentService.ServletPostAsyncTask().execute(new GCMParams(
                         getApplicationContext(), "requestTarget", userId , "", targetId, ""));
             }
         });
 
+        Button mP2PMessagingButton = (Button) findViewById(R.id.buttonP2PMessaging);
+        assert mP2PMessagingButton != null;
+        mP2PMessagingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), MessagingActivity.class);
+                startActivity(i);
+            }
+        });
+
+
+
+    }
+
+    // make sure necessary input fields are filled
+    protected boolean validateInputs(int type){
+        // if no userId provided by user
+        if (userId.equals("") && mUserIdEditText.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "OI! Fill in userId leh!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        // if no targetId provided by user
+        else if (type == 2 && targetId.equals("") && mTargetIdEditText.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "OI! Fill in targetId leh!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
     }
 
     @Override

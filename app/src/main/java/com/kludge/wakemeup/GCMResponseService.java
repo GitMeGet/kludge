@@ -3,9 +3,9 @@ package com.kludge.wakemeup;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 /*
  * Created by Yu Peng on 10/7/2016.
@@ -25,11 +25,15 @@ public class GCMResponseService extends Service {
         response = intent.getStringExtra("response");
         requestId = intent.getStringExtra("requestId");
 
-        Log.v("GCMResponseService", "hello");
-
         if (response.equals("yes")) {
+
+            // saves targetId in SharedPrefs
+            SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("targetId", requestId);
+            editor.apply();
+
             // include userId
-            Log.i("dumb", "i am stupid");
             new GCMRegistrationIntentService.ServletPostAsyncTask().execute(new GCMParams(
                     getApplicationContext(), "requestAccepted", GCMRegisterActivity.userId, "", requestId, ""));
         }

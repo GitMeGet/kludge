@@ -127,17 +127,6 @@ public class MainAlarm extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alarm);
 
-        // SOON TO BE REMOVED TO MENU BAR
-        Button button_gcm = (Button) findViewById(R.id.button_gcm);
-        assert button_gcm != null;
-        button_gcm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), GCMRegisterActivity.class);
-                startActivity(i);
-            }
-        });
-
         sharedPrefs = getSharedPreferences("preferences_main", MODE_PRIVATE);
 
         // for notifications
@@ -351,6 +340,20 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         //gets the switch widget for the View
         Switch aSwitch = (Switch) convertView.findViewById(R.id.view_alarm_on_state);
         aSwitch.setChecked(MainAlarm.alarms.get(pos).isOnState());         //if the alarm state was on, set aSwitch accordingly
+
+        Button socializeButton = (Button) convertView.findViewById(R.id.socializeButton);
+
+        socializeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), GCMRegisterActivity.class);
+
+                i.putExtra("alarmId", alarm.getId());
+
+                getContext().startActivity(i);
+            }
+        });
+
 
         aSwitch.setOnClickListener(new View.OnClickListener() {
             @Override

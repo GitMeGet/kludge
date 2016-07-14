@@ -26,4 +26,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"/>
 
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Socialize!"
+        android:id="@+id/socializeButton"
+        android:layout_alignBottom="@+id/view_alarm_time"
+        android:layout_toLeftOf="@+id/view_alarm_on_state"
+        android:layout_toStartOf="@+id/view_alarm_on_state"
+        android:layout_marginRight="40dp"
+        android:layout_marginEnd="40dp"/>
+
 </RelativeLayout>
