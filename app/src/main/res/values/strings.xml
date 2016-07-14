@@ -41,4 +41,8 @@
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
 
+    //SCOREBOARD
+    <string name="scoreboard_username">USERNAME</string>
+    <string name="scoreboard_snoozes">USERNAME has snoozed SNOO_FREQ times since TIME!</string>
+
 </resources>

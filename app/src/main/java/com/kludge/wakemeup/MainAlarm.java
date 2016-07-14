@@ -301,12 +301,18 @@ public class MainAlarm extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+
         switch(item.getItemId()){
+            case R.id.menu_scoreboard:
+                intent = new Intent(getApplicationContext(), ScoreboardActivity.class);
+                startActivity(intent);
+                break;
             case R.id.menu_plus:
                 requestAddAlarm();
                 break;
             case R.id.menu_settings:
-                Intent intent = new Intent(getApplicationContext(), MainPreference.class);
+                intent = new Intent(getApplicationContext(), MainPreference.class);
                 startActivity(intent);
                 break;
             default:
