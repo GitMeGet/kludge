@@ -24,7 +24,6 @@ public class InputAlarm extends AppCompatActivity {
 
     long alarmId;
     static SharedPreferences sharedPrefs;
-    SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +36,12 @@ public class InputAlarm extends AppCompatActivity {
 
         // initialise preferences if editing existing alarm
         if (alarmId != -1){
-
-            Log.i("InputAlarm", "do");
-
             SharedPreferences.Editor editor = sharedPrefs.edit();
             AlarmDetails alarm = AlarmLab.get(getBaseContext()).getAlarmDetails(alarmId);
 
             editor.putString("preference_alarm_name", alarm.getName());
             editor.putInt("preference_alarm_hour", alarm.getHour());
+
             editor.putInt("preference_alarm_minute", alarm.getMin());
             editor.putBoolean("preference_alarm_repeat", alarm.isRepeat());
             editor.putString("preference_snooze_duration", ""+alarm.getnSnooze());
@@ -58,12 +55,10 @@ public class InputAlarm extends AppCompatActivity {
 
             editor.apply();
         }
-
         else{
-            // set defaults
+            // set defaults, when add_alarm
             PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.alarm_preferences, false);
         }
-
 
         //sets up Preferences fragment
         FragmentManager fragmentManager = getFragmentManager();
@@ -72,43 +67,6 @@ public class InputAlarm extends AppCompatActivity {
         SettingsFragment settingsFragment = new SettingsFragment();
         fragmentTransaction.add(android.R.id.content, settingsFragment, "SETTINGS_FRAGMENT");
         fragmentTransaction.commit();
-
-
-        /*
-         //todo:fix updating summary
-        //update time text on alarm preference
-        prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                Log.i("changed"," called");
-                switch(key){
-                    case "preference_alarm_name":
-                        EditTextPreference prefName = (EditTextPreference) findPreference(key);
-                        prefName.setSummary("Name: "+sharedPreferences.getString("preference_alarm_name", "New Alarm"));
-                        break;
-                    case "preference_alarm_time":
-                        com.kludge.wakemeup.TimePreference prefTime = (com.kludge.wakemeup.TimePreference) findPreference(key);
-                        prefTime.setSummary("Time set: "+sharedPreferences.getInt("preference_alarm_hour",0)+":"+sharedPreferences.getInt("preference_alarm_minute", 0));
-                        break;
-                    case "preference_alarm_snooze":
-                        ListPreference prefSnooze = (ListPreference) findPreference(key) ;
-                        prefSnooze.setSummary("Snooze duration: "+sharedPreferences.getInt("preference_snooze_duration", 0)+" minutes");
-                        break;
-                }
-            }
-        };
-
-        sharedPrefs.registerOnSharedPreferenceChangeListener(prefListener);
-
-        /*
-        TimePicker viewTimePicker = ((TimePicker) findViewById(R.id.time_picker));
-        assert viewTimePicker != null;
-        viewTimePicker.setIs24HourView(true);
-
-        TextView buttonSave = (TextView) findViewById(R.id.butt_add_alarm);
-        buttonSave.setText("Add");
-
-        */
     }
 
     @Override
@@ -167,8 +125,7 @@ public class InputAlarm extends AppCompatActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            Log.i("changed"," called");
-
+            Log.i("preference changed","oSPC called");
 
             switch(key){
                 case "preference_alarm_name":
@@ -181,33 +138,11 @@ public class InputAlarm extends AppCompatActivity {
                     nf.setMinimumIntegerDigits(2);
                     prefTime.setSummary("Time: "+sharedPreferences.getInt("preference_alarm_hour",0)+":"+nf.format(sharedPreferences.getInt("preference_alarm_minute", 0)));
                     break;
-                case "preference_snooze_duration":
-                    ListPreference prefSnooze = (ListPreference) findPreference(key) ;
-                    prefSnooze.setSummary("Snooze duration: "+sharedPreferences.getString("preference_snooze_duration", "3")+" minutes");
-                    break;
             }
         }
     }
 
     private void sendAlarm(){
-
-        //update sharedPrefs here before putting in
-        //prefEditor.putString("preference_alarm_name", "Alarm Name");
-        //prefEditor.putBoolean("preference_alarm_repeat", false);
-
-        //prefEditor.apply();
-        /*
-        EditText viewAlarmName = ((EditText) findViewById(R.id.alarm_name));
-        assert viewAlarmName != null;
-        String alarmName = viewAlarmName.getText().toString();
-
-        TimePicker viewTimePicker = ((TimePicker) findViewById(R.id.time_picker));
-        assert viewTimePicker != null;
-
-        */
-
-        SharedPreferences.Editor prefEditor = sharedPrefs.edit();
-
         alarmId = getIntent().getLongExtra("alarmId", -1);
 
         Intent data = new Intent();

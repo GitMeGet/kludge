@@ -11,7 +11,7 @@
             android:summary="@string/summary_alarm_time"
             android:dialogMessage=""
             android:positiveButtonText="@string/button_add"
-            android:negativeButtonText="@string/button_cancel"/>
+            android:negativeButtonText="@string/button_cancel" />
 
         <CheckBoxPreference android:key="preference_alarm_repeat"
             android:title="@string/title_alarm_repeat"

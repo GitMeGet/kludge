@@ -61,8 +61,7 @@ public class MainAlarm extends AppCompatActivity {
 
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMinimumIntegerDigits(2);
-
-
+        
         switch (type) {
             case ID_NOTIFICATION_ALARM:
                 String time = "No Alarm";

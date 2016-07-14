@@ -3,6 +3,8 @@
           package="com.kludge.wakemeup">
 
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!--  Internet Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -50,17 +52,13 @@
             android:parentActivityName=".AlarmWake"
             android:screenOrientation="portrait" />
 
-        <service
-            android:name=".RingtoneService"
-            android:enabled="true"
-            android:exported="true"/>
-
-        <receiver android:name=".AlarmReceiver"/>
-        <receiver android:name=".NotificationReceiver"/>
 
         <activity
             android:name=".GCMRegisterActivity">
         </activity>
+
+        <receiver android:name=".AlarmReceiver"/>
+        <receiver android:name=".NotificationReceiver"/>
 
         <!-- [START gcm_receiver] -->
         <receiver
@@ -106,6 +104,11 @@
             android:name=".GCMResponseService"
             android:exported="false">
         </service>
+
+        <service
+            android:name=".RingtoneService"
+            android:enabled="true"
+            android:exported="true"/>
 
     </application>
 
