@@ -11,9 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.api.services.datastore.Datastore;
+
+
+
 import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
+import java.security.KeyFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +31,13 @@ public class ScoreboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scoreboard);
 
+        new DatastoreService().execute(new Pair<Context, String>(this, "Manfred"));
+
         //TEMP!! // TODO: 14/7/2016
         userInfo = new ArrayList<>();
         userInfo.add(new Pair<>("paszaBiceps", "has snoozed 16-0 times since 69am!"));
 
 
-        
         ListView scoreList = (ListView) findViewById(R.id.view_scoreboard_list);
         assert scoreList != null;
         ScoreAdapter scoreAdapter = new ScoreAdapter(this, userInfo);
@@ -67,3 +73,5 @@ class ScoreAdapter extends ArrayAdapter<Pair<String, String>>{
                 //super.getView(position, convertView, parent);
     }
 }
+
+

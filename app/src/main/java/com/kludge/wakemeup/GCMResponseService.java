@@ -23,7 +23,7 @@ public class GCMResponseService extends Service {
         n.cancel(GCMListenerService.REQUEST_NOTIFICATION_ID);
 
         response = intent.getStringExtra("response");
-        requestId = intent.getStringExtra("requestId");
+        requestId = intent.getStringExtra("requestId"); //todo: user InstanceID or something
 
         if (response.equals("yes")) {
 

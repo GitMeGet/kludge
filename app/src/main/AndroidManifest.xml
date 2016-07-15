@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kludge.wakemeup">
+    package="com.kludge.wakemeup" >
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,13 +18,13 @@
         android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainAlarm"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -61,13 +61,13 @@
         <receiver android:name=".AlarmReceiver" />
         <receiver android:name=".NotificationReceiver" />
 
-        <activity android:name=".GCMRegisterActivity"></activity>
+        <activity android:name=".GCMRegisterActivity" />
 
         <!-- [START gcm_receiver] -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
@@ -81,8 +81,8 @@
         <!-- [START gcm_listener] -->
         <service
             android:name=".GCMListenerService"
-            android:exported="false">
-            <intent-filter android:priority="10000">
+            android:exported="false" >
+            <intent-filter android:priority="10000" >
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
@@ -90,7 +90,7 @@
         <!-- [START instanceId_listener] -->
         <service
             android:name=".GCMInstanceIDListenerService"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
@@ -99,13 +99,13 @@
 
         <service
             android:name=".GCMRegistrationIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
         <service
             android:name=".GCMResponseService"
-            android:exported="false"></service>
+            android:exported="false" />
 
-        <activity android:name=".MessagingActivity"></activity>
-        <activity android:name=".ScoreboardActivity"></activity>
+        <activity android:name=".MessagingActivity" />
+        <activity android:name=".ScoreboardActivity" />
     </application>
 
 </manifest>
