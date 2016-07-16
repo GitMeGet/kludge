@@ -19,6 +19,14 @@ public class UserManager {
         userDetails = c.getSharedPreferences("preferences_user", Context.MODE_PRIVATE);
     }
 
+    public void setUserID(String userID){
+        userDetails.edit().putString("user_userID", userID).apply();
+    }
+
+    public void setUsername(String username) {
+        userDetails.edit().putString("user_username", username).apply();
+    }
+
     public void increaseScore(int increment) {
         int score = userDetails.getInt("user_score", 0);
         userDetails.edit().putInt("user_score", score+=(increment<0?0:increment)).apply();
@@ -37,6 +45,10 @@ public class UserManager {
         userDetails.edit().putInt("user_snoozes", 0).apply();
     }
 
+
+
+    public String getUsername() {return userDetails.getString("user_username", "USERNAME_ERROR");}
+    public String getUserID() {return userDetails.getString("user_userID", "USERID_ERROR");}
     public int getScore() {return userDetails.getInt("user_score", 0);}
     public int getSnooze() {return userDetails.getInt("user_snoozes", 0);}
 }

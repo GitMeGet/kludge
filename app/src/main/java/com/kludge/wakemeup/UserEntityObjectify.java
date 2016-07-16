@@ -8,7 +8,7 @@ import com.googlecode.objectify.annotation.Id;
  */
 
 @Entity
-public class UserEntity {
+public class UserEntityObjectify {
 
     @Id Long id;
     private String username;
@@ -16,7 +16,7 @@ public class UserEntity {
     private String tokenID;
     private int snoozeFreq;
 
-    public UserEntity(String username, String userID, String tokenID, int snoozeFreq){
+    public UserEntityObjectify(String username, String userID, String tokenID, int snoozeFreq){
 
         this.username = username;
         this.userID = userID;
