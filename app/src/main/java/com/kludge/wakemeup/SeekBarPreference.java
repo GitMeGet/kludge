@@ -11,18 +11,12 @@ import android.widget.SeekBar;
  */
 public class SeekBarPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener{
 
-
-
     public SeekBarPreference(Context context, AttributeSet attrSet){
         super(context, attrSet);
-
-
     }
 
     @Override
     protected View onCreateDialogView() {
-
-
         return super.onCreateDialogView();
     }
 
