@@ -144,6 +144,8 @@ public class MessagingFragment extends ListFragment {
         super.onResume();
         // re-register P2P broadcast receiver
         registerReceiver();
+
+        initTextToSpeech();
     }
 
     @Override
@@ -151,6 +153,11 @@ public class MessagingFragment extends ListFragment {
         // unregister P2P message broadcast receiver
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mP2PMessageBroadcastReceiver);
         isP2PReceiverRegistered = false;
+
+        // release text to speech resources
+        mTextToSpeech.stop();
+        mTextToSpeech.shutdown();
+
         super.onPause();
     }
 }
