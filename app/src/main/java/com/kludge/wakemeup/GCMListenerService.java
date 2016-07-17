@@ -4,7 +4,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -62,11 +61,10 @@ public class GCMListenerService extends GcmListenerService {
                 break;
             case "requestAccepted":
 
-                // saves targetId in SharedPrefs
-                SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("targetId", requestId);
-                editor.apply();
+                // Notify GCMRegisterActivity request was accepted
+                Intent requestAccepted = new Intent("requestAccepted");
+                requestAccepted.putExtra("targetId", requestId);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(requestAccepted);
 
                 sendResponseNotification(messageType);
                 break;
@@ -77,6 +75,7 @@ public class GCMListenerService extends GcmListenerService {
                 // Notify MessagingFragment of new incoming message
                 Intent newMessage = new Intent("incomingP2PMessage");
                 newMessage.putExtra("message", message);
+                newMessage.putExtra("targetId", requestId);
                 boolean b = LocalBroadcastManager.getInstance(this).sendBroadcast(newMessage);
 
                 Log.d(TAG, "sent broadcast" + " " + b);

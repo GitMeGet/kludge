@@ -53,6 +53,8 @@ public class MainAlarm extends AppCompatActivity {
 
     protected static void createNotification(int type, AlarmDetails alarm) {
 
+        System.out.println("createNotification");
+
         Intent i = new Intent(mContext, MainAlarm.class);
         PendingIntent pi = PendingIntent.getActivity(mContext, 0, i, 0);
 
@@ -61,19 +63,19 @@ public class MainAlarm extends AppCompatActivity {
 
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMinimumIntegerDigits(2);
-        
+
         switch (type) {
             case ID_NOTIFICATION_ALARM:
                 String time = "No Alarm";
 
                 AlarmDetails earliestAlarm = AlarmLab.get(mContext).getEarliestAlarm();
                 if (earliestAlarm != null) {
-                    time = "Next Alarm: " + earliestAlarm.getHour() + ":" + nf.format(alarm.getMin());
+                    time = "Next Alarm: " + earliestAlarm.getHour() + ":" + nf.format(earliestAlarm.getMin());
                 }
 
                 mBuilder.setContentTitle(time)
                         .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-                        // persistent
+                        // persistent notification
                         .setOngoing(true)
                         // notification opens up MainAlarm when pressed
                         .setContentIntent(pi);
@@ -84,10 +86,10 @@ public class MainAlarm extends AppCompatActivity {
             case ID_NOTIFICATION_SLEEP:
 
                 double hoursToAlarm = (alarm.getTimeInMillis() - System.currentTimeMillis()) * (2.77778e-7);
-                double minsToAlarm = (hoursToAlarm - (int)hoursToAlarm) * 60;
+                double minsToAlarm = (hoursToAlarm - (int) hoursToAlarm) * 60;
                 String minutesToAlarm = String.format("%.0f", minsToAlarm);
 
-                String hTA = "Time till wake: " + (int)hoursToAlarm + "hrs "
+                String hTA = "Time till wake: " + (int) hoursToAlarm + "hrs "
                         + minutesToAlarm + "mins";
 
                 mBuilder.setContentTitle("Please Sleep Soon")
@@ -112,7 +114,7 @@ public class MainAlarm extends AppCompatActivity {
     }
 
     protected static void destroyNotificaton(int type, AlarmDetails alarm) {
-        switch(type){
+        switch (type) {
             case ID_NOTIFICATION_ALARM:
                 notificationManager.cancel(ID_NOTIFICATION_ALARM);
                 break;
@@ -133,7 +135,7 @@ public class MainAlarm extends AppCompatActivity {
         mContext = this;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        if(sharedPrefs.getBoolean("preference_persistent_notification", false)) {
+        if (sharedPrefs.getBoolean("preference_persistent_notification", false)) {
             createNotification(ID_NOTIFICATION_ALARM, null);
         }
 
@@ -235,16 +237,16 @@ public class MainAlarm extends AppCompatActivity {
     }
 
     //updates notifications, registers pendingintents, refreshes listview, saves alarms
-    private void updateAll(AlarmDetails alarm){
-        if (alarm.isOnState())
+    private void updateAll(AlarmDetails alarm) {
+        if (alarm.isOnState()) {
             alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
+
+            // update notification
+            createNotification(ID_NOTIFICATION_ALARM, alarm);
+        }
 
         //save the alarms
         AlarmLab.get(getApplicationContext()).saveAlarms();
-
-        // update persistent notification
-        if(sharedPrefs.getBoolean("preference_persistent_notification", false))
-            createNotification(ID_NOTIFICATION_ALARM, alarm);
 
         alarmAdapter.notifyDataSetChanged();
     }
@@ -303,7 +305,7 @@ public class MainAlarm extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
 
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_scoreboard:
                 intent = new Intent(getApplicationContext(), ScoreboardActivity.class);
                 startActivity(intent);
@@ -366,14 +368,16 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
             public void onClick(View v) {
                 alarm.toggleOnState();
 
-                // update persistent notification
-                MainAlarm.createNotification(MainAlarm.ID_NOTIFICATION_ALARM,null);
-
                 //checks the pendingIntent for the alarm
                 if (alarm.isOnState())
                     alarm.registerAlarmIntent(getContext(), AlarmDetails.ADD_ALARM);
                 else //cancel the alarm
                     alarm.registerAlarmIntent(getContext(), AlarmDetails.CANCEL_ALARM);
+
+                // update persistent notification
+                if (getContext().getSharedPreferences("preferences_main", Context.MODE_PRIVATE)
+                        .getBoolean("preference_persistent_notification", false))
+                    MainAlarm.createNotification(MainAlarm.ID_NOTIFICATION_ALARM, null);
 
                 notifyDataSetChanged();
             }
@@ -384,7 +388,7 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMinimumIntegerDigits(2);
 
-        alarmTime.setText(alarm.getHour() +":"+ nf.format(alarm.getMin()));
+        alarmTime.setText(alarm.getHour() + ":" + nf.format(alarm.getMin()));
                 /*
                 + (alarm.isOnState() ? " ON" : " OFF")
                 + " Repeat: " + (alarm.isRepeat() ? "YES" : "NO")

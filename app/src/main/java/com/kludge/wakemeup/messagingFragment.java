@@ -6,28 +6,48 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /*
  * Created by Yu Peng on 13/7/2016.
  */
-public class MessagingFragment extends android.support.v4.app.Fragment {
+public class MessagingFragment extends ListFragment {
 
-    private String userId, targetId;
-    private TextView mP2PMessageTextView;
+    public String userId, targetId;
     private boolean isP2PReceiverRegistered;
+    private ArrayList<Pair<String, String>> messageArrayList;
+    private MessageAdapter messageAdapter;
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_messaging, container, false);
+
+        View rootView = inflater.inflate(R.layout.fragment_messaging, container, false);
+
+        // create adapter for messages ListView
+        ListView messageList = (ListView) rootView.findViewById(android.R.id.list);
+        assert messageList != null;
+        messageArrayList = new ArrayList<>();
+        messageAdapter = new MessageAdapter(getContext(), messageArrayList);
+
+        setListAdapter(messageAdapter);
+
+
+        return rootView;
     }
 
     @Override
@@ -38,13 +58,12 @@ public class MessagingFragment extends android.support.v4.app.Fragment {
         userId = getActivity().getSharedPreferences("preferences_user", getActivity().MODE_PRIVATE).getString("userId", "");
 
         // *** potentially more than 1 unique targetId, shouldn't store in SharedPrefs; should be in AlarmDetails ***
-        targetId = getActivity().getSharedPreferences("preferences_user", getActivity().MODE_PRIVATE).getString("targetId", "");
+        targetId = getActivity().getIntent().getStringExtra("targetId");
         Log.i("Messaging Fragment", "targetId is " + targetId);
 
-        // make text view scrollable (need custom listView???)
-        mP2PMessageTextView = (TextView) view.findViewById(R.id.P2PMessageTextView);
         final EditText mP2PMessageEditText = (EditText) view.findViewById(R.id.P2PMessageEditText);
         Button mSendP2PMessageButton = (Button) view.findViewById(R.id.sendP2PMessageButton);
+
 
         mSendP2PMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,12 +71,14 @@ public class MessagingFragment extends android.support.v4.app.Fragment {
                 String message = mP2PMessageEditText.getText().toString();
                 mP2PMessageEditText.getText().clear();
 
-                // add current message to P2P message text view
-
-
-
-
                 sendP2PMessage(message);
+
+                // save message to messageArrayList to be displayed by P2PMessageListView
+                Pair<String, String> outgoingP2PMessage = new Pair<>(userId, message);
+                messageArrayList.add(outgoingP2PMessage);
+
+                // refresh messageAdapter
+                messageAdapter.notifyDataSetChanged();
 
                 registerReceiver();
 
@@ -78,7 +99,13 @@ public class MessagingFragment extends android.support.v4.app.Fragment {
         public void onReceive(Context context, Intent intent) {
 
             String message = intent.getStringExtra("message");
-            mP2PMessageTextView.setText(message);
+            String targetId = intent.getStringExtra("targetId");
+
+            Pair<String, String> incomingP2PMessage = new Pair<>(targetId, message);
+            messageArrayList.add(incomingP2PMessage);
+
+            // refresh messageAdapter
+            messageAdapter.notifyDataSetChanged();
         }
     };
 
@@ -103,5 +130,40 @@ public class MessagingFragment extends android.support.v4.app.Fragment {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mP2PMessageBroadcastReceiver);
         isP2PReceiverRegistered = false;
         super.onPause();
+    }
+}
+
+//arrayAdapter for the 'scoreboard'
+class MessageAdapter extends ArrayAdapter<Pair<String, String>>{
+
+    public MessageAdapter(Context context, ArrayList<Pair<String, String>> messageInfo){
+        super(context, 0, messageInfo);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        //retrieve individual userInfo
+        final Pair<String, String> messageInfo = getItem(position);
+
+        String userId = getContext().getSharedPreferences("preferences_user", Context.MODE_PRIVATE).getString("userId", "");
+        TextView message;
+
+        if (messageInfo.first.equals(userId)) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.message_list_item_right, parent, false);
+
+            message = (TextView) convertView.findViewById(R.id.message_textview);
+            message.setText(userId + ": " + messageInfo.second);
+        }
+        else {
+            String targetId = messageInfo.first;
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.message_list_item_left, parent, false);
+
+            message = (TextView) convertView.findViewById(R.id.message_textview);
+            message.setText(targetId + ": " + messageInfo.second);
+        }
+
+        return convertView;
+        //super.getView(position, convertView, parent);
     }
 }

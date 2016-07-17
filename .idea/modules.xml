@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/WakeMeUp.iml" filepath="$PROJECT_DIR$/WakeMeUp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/kludge.iml" filepath="$PROJECT_DIR$/kludge.iml" />
       <module fileurl="file://$PROJECT_DIR$/wmu_datastore/wmu_datastore.iml" filepath="$PROJECT_DIR$/wmu_datastore/wmu_datastore.iml" />

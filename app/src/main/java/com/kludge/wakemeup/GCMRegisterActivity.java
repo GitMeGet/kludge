@@ -29,9 +29,11 @@ public class GCMRegisterActivity extends AppCompatActivity {
     private static final String TAG = "GCMRegisterActivity";
 
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private BroadcastReceiver mRequestAcceptedBroadcastReceiver;
     private ProgressBar mRegistrationProgressBar;
     private TextView mInformationTextView;
     private boolean isReceiverRegistered;
+    private boolean isAcceptanceReceiverRegistered;
 
     private AlarmDetails alarm;
 
@@ -42,7 +44,7 @@ public class GCMRegisterActivity extends AppCompatActivity {
     EditText mTargetIdEditText;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_gcm);
 
@@ -62,9 +64,24 @@ public class GCMRegisterActivity extends AppCompatActivity {
                 }
             }
         };
+
+        // if targetId accepts request, add targetId to this AlarmDetail
+        mRequestAcceptedBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+               if(intent.getStringExtra("targetId").equals(targetId)){
+                    alarm.setTargetId(targetId);
+
+                   LocalBroadcastManager.getInstance(getParent()).unregisterReceiver(mRequestAcceptedBroadcastReceiver);
+                   isReceiverRegistered = false;
+                }
+            }
+        };
+
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
         // Registering BroadcastReceiver to receive if GCMRegistrationService is successful
+        // Also registers BroadcastReceiver to receive if targetId accepts request
         registerReceiver();
 
         // get alarm from AlarmLab
@@ -79,7 +96,9 @@ public class GCMRegisterActivity extends AppCompatActivity {
         mUserIdEditText.setText(userId);
 
         // if user had previously entered targetId, show it
-        targetId = getSharedPreferences("preferences_user", MODE_PRIVATE).getString("targetId", "");
+        targetId = alarm.getTargetId();
+        if (targetId == null)
+            targetId = "";
         mTargetIdEditText.setText(targetId);
 
         Button mSaveUserIdButton = (Button) findViewById(R.id.saveUserIdButton);
@@ -98,6 +117,12 @@ public class GCMRegisterActivity extends AppCompatActivity {
                     // add username to intent extra
                     userId = mUserIdEditText.getText().toString();
                     intent.putExtra("userId", userId);
+
+                    // save userId to SharedPrefs
+                    SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("userId", userId);
+                    editor.apply();
 
                     startService(intent);
                 }
@@ -126,6 +151,7 @@ public class GCMRegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), MessagingActivity.class);
+                i.putExtra("targetId", targetId);
                 startActivity(i);
             }
         });
@@ -168,6 +194,11 @@ public class GCMRegisterActivity extends AppCompatActivity {
         if(!isReceiverRegistered) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter("registrationComplete"));
+            isReceiverRegistered = true;
+        }
+        if (!isAcceptanceReceiverRegistered){
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRequestAcceptedBroadcastReceiver,
+                    new IntentFilter("requestAccepted"));
             isReceiverRegistered = true;
         }
     }
