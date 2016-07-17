@@ -44,6 +44,7 @@ public class GCMResponseService extends Service {
                     getApplicationContext(), "requestRejected", GCMRegisterActivity.userId, "", requestId, ""));
         }
 
+        stopSelf();
 
         return super.onStartCommand(intent, flags, startId);
     }

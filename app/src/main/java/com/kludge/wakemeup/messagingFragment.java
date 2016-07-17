@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -18,8 +19,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /*
  * Created by Yu Peng on 13/7/2016.
@@ -30,6 +33,8 @@ public class MessagingFragment extends ListFragment {
     private boolean isP2PReceiverRegistered;
     private ArrayList<Pair<String, String>> messageArrayList;
     private MessageAdapter messageAdapter;
+
+    private TextToSpeech mTextToSpeech;
 
 
     @Nullable
@@ -85,7 +90,21 @@ public class MessagingFragment extends ListFragment {
             }
         });
 
+        initTextToSpeech();
     }
+
+    private void initTextToSpeech(){
+        mTextToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR)
+                    mTextToSpeech.setLanguage(Locale.UK);
+                else
+                    Toast.makeText(getContext(), "textToSpeech init failed", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     // post P2P message to server
     private void sendP2PMessage(String message) {
@@ -106,6 +125,9 @@ public class MessagingFragment extends ListFragment {
 
             // refresh messageAdapter
             messageAdapter.notifyDataSetChanged();
+
+            // read out incomingP2P message
+            mTextToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, "TextToSpeechIncomingP2PMessage");
         }
     };
 
