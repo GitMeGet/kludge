@@ -4,13 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AlarmWake extends AppCompatActivity {
+public class AlarmWake extends FragmentActivity {
 
     public static final int MATH_GAME = 1;
     public static final int PONG_GAME = 2;
@@ -132,6 +133,31 @@ public class AlarmWake extends AppCompatActivity {
                 }
             }
         });
+
+        // init fragment if there's a targetId
+        if (!alarm.getTargetId().equals("")) {
+            // check if activity using layout with fragment_container FrameLayout
+            if (findViewById(R.id.fragment_container) != null) {
+
+                // don't do anything if being restored from previous saved state
+                // or could have overlapping fragments
+                if (savedInstanceState != null)
+                    return;
+
+                // create new MessagingFragment to place inside fragment_container
+                MessagingFragment messagingFragment = new MessagingFragment();
+
+                // In case this activity was started with special instructions from an
+                // Intent, pass the Intent's extras to the fragment as arguments
+                Bundle bundle = new Bundle();
+                bundle.putLong("alarmId", alarmId);
+                messagingFragment.setArguments(bundle);
+
+                // Add the fragment to the 'fragment_container' FrameLayout
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, messagingFragment).commit();
+            }
+        }
     }
 
     // disables back button

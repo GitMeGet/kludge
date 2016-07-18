@@ -28,7 +28,13 @@ public class MessagingActivity extends FragmentActivity {
 
             // In case this activity was started with special instructions from an
             // Intent, pass the Intent's extras to the fragment as arguments
-            messagingFragment.setArguments(getIntent().getExtras());
+            Bundle bundle = new Bundle();
+            String targetId = getIntent().getStringExtra("targetId");
+
+            System.out.println("4 " + targetId);
+
+            bundle.putString("targetId", targetId);
+            messagingFragment.setArguments(bundle);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()

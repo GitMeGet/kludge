@@ -209,7 +209,8 @@ public class MainAlarm extends AppCompatActivity {
                 data.getIntExtra("game", AlarmDetails.GAME_DISABLED),
                 data.getIntExtra("mathqns", 1),
                 data.getIntExtra("mathdifficulty", 1),
-                data.getIntExtra("sleepdur", 6));
+                data.getIntExtra("sleepdur", 6),
+                "");
 
         alarms.add(newAlarm);
 

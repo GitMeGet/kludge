@@ -7,63 +7,78 @@
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
-                tools:context="com.kludge.wakemeup.AlarmWake"
+                android:touchscreenBlocksFocus="false"
                 android:visibility="visible"
-                android:touchscreenBlocksFocus="false">
+                tools:context="com.kludge.wakemeup.AlarmWake">
 
-    <TextView android:id="@+id/view_alarm_time_hint"
+    <TextView
+        android:id="@+id/view_alarm_time_hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:text="It is already,"
-        android:textSize="25dp"
         android:textAlignment="center"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:textSize="25dp"/>
 
 
-    <TextClock android:id="@+id/view_alarm_clock"
+    <TextClock
+        android:id="@+id/view_alarm_clock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/view_alarm_time_hint"
+        android:format12Hour="H:mm"
         android:textAlignment="center"
         android:textSize="110sp"
-        android:format12Hour="H:mm"
         android:textStyle="bold"
-        android:layout_below="@id/view_alarm_time_hint"
-    />
+        />
 
-    <TextView android:id="@+id/view_user_score"
+    <TextView
+        android:id="@+id/view_user_score"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="25sp"
         android:layout_below="@id/view_alarm_clock"
         android:text="SCORE_ERROR"
+        android:textAlignment="center"
+        android:textSize="25sp"
         />
+
     <LinearLayout
+        android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_below="@id/view_user_score">
 
-        <Button android:id="@+id/butt_dismiss"
-                android:layout_height="match_parent"
-         android:layout_width="wrap_content"
-         android:layout_alignParentStart="true" android:layout_alignParentLeft="true"
-         android:layout_centerInParent="true"
-        android:text="@string/button_dismiss"
-            android:textSize="40dp"
-        android:layout_weight="0.8"/>
+        <Button
+            android:id="@+id/butt_dismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
+            android:layout_weight="0.8"
+            android:text="@string/button_dismiss"
+            android:textSize="40dp"/>
 
-     <Button android:id="@+id/butt_snooze_alarm"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="@string/button_snooze"
-        android:layout_alignTop="@+id/butt_dismiss_alarm"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_weight="0.2"/>
+        <Button
+            android:id="@+id/butt_snooze_alarm"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/butt_dismiss_alarm"
+            android:layout_weight="0.2"
+            android:text="@string/button_snooze"/>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linear_layout">
+    </FrameLayout>
 
 </RelativeLayout>

@@ -29,11 +29,9 @@ public class GCMRegisterActivity extends AppCompatActivity {
     private static final String TAG = "GCMRegisterActivity";
 
     private BroadcastReceiver mRegistrationBroadcastReceiver;
-    private BroadcastReceiver mRequestAcceptedBroadcastReceiver;
     private ProgressBar mRegistrationProgressBar;
     private TextView mInformationTextView;
     private boolean isReceiverRegistered;
-    private boolean isAcceptanceReceiverRegistered;
 
     private AlarmDetails alarm;
 
@@ -65,27 +63,13 @@ public class GCMRegisterActivity extends AppCompatActivity {
             }
         };
 
-        // if targetId accepts request, add targetId to this AlarmDetail
-        mRequestAcceptedBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-               if(intent.getStringExtra("targetId").equals(targetId)){
-                    alarm.setTargetId(targetId);
-
-                   LocalBroadcastManager.getInstance(getParent()).unregisterReceiver(mRequestAcceptedBroadcastReceiver);
-                   isReceiverRegistered = false;
-                }
-            }
-        };
-
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
         // Registering BroadcastReceiver to receive if GCMRegistrationService is successful
-        // Also registers BroadcastReceiver to receive if targetId accepts request
         registerReceiver();
 
         // get alarm from AlarmLab
-        long alarmId = getIntent().getLongExtra("alarmId", -1);
+        final long alarmId = getIntent().getLongExtra("alarmId", -1);
         alarm = AlarmLab.get(getApplicationContext()).getAlarmDetails(alarmId);
 
         mUserIdEditText =(EditText) findViewById(R.id.userIdEditText);
@@ -97,8 +81,6 @@ public class GCMRegisterActivity extends AppCompatActivity {
 
         // if user had previously entered targetId, show it
         targetId = alarm.getTargetId();
-        if (targetId == null)
-            targetId = "";
         mTargetIdEditText.setText(targetId);
 
         Button mSaveUserIdButton = (Button) findViewById(R.id.saveUserIdButton);
@@ -129,6 +111,12 @@ public class GCMRegisterActivity extends AppCompatActivity {
             }
         });
 
+        // get timeInMillis
+        final String timeInMillis = Long.toString(alarm.getTimeInMillis());
+
+        // get message
+        final String requestMessage = "I have important business tmr";
+
         Button mRequestTargetIdButton = (Button) findViewById(R.id.requestTargetIdButton);
         assert mRequestTargetIdButton != null;
         mRequestTargetIdButton.setOnClickListener(new View.OnClickListener() {
@@ -140,8 +128,9 @@ public class GCMRegisterActivity extends AppCompatActivity {
 
                 targetId = mTargetIdEditText.getText().toString();
 
-                new GCMRegistrationIntentService.ServletPostAsyncTask().execute(new GCMParams(
-                        getApplicationContext(), "requestTarget", userId , "", targetId, ""));
+                new ServletPostAsyncTask().execute(new GCMParams(
+                        getApplicationContext(), "requestTarget", userId , "", targetId,
+                        timeInMillis, requestMessage, Long.toString(alarmId)));
             }
         });
 
@@ -194,11 +183,6 @@ public class GCMRegisterActivity extends AppCompatActivity {
         if(!isReceiverRegistered) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter("registrationComplete"));
-            isReceiverRegistered = true;
-        }
-        if (!isAcceptanceReceiverRegistered){
-            LocalBroadcastManager.getInstance(this).registerReceiver(mRequestAcceptedBroadcastReceiver,
-                    new IntentFilter("requestAccepted"));
             isReceiverRegistered = true;
         }
     }

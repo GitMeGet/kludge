@@ -13,6 +13,9 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import java.text.NumberFormat;
+import java.util.Calendar;
+
 /*
  * Created by Yu Peng on 7/7/2016.
  */
@@ -42,8 +45,10 @@ public class GCMListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String messageType = data.getString("messageType");
-        String requestId = data.getString("requestId");
+        String userId = data.getString("userId");
         String message = data.getString("message");
+        String timeInMillis = data.getString("timeInMillis");
+        String alarmId = data.getString("alarmId");
 
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + messageType);
@@ -57,14 +62,15 @@ public class GCMListenerService extends GcmListenerService {
         assert messageType != null;
         switch (messageType) {
             case "requestTarget":
-                sendRequestNotification(requestId);
+                sendRequestNotification(userId, timeInMillis, message, alarmId);
                 break;
             case "requestAccepted":
 
-                // Notify GCMRegisterActivity request was accepted
-                Intent requestAccepted = new Intent("requestAccepted");
-                requestAccepted.putExtra("targetId", requestId);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(requestAccepted);
+                // save targetId with specified alarmId
+                AlarmDetails alarm = AlarmLab.get(getApplicationContext())
+                        .getAlarmDetails(Long.parseLong(alarmId));
+
+                alarm.setTargetId(userId);
 
                 sendResponseNotification(messageType);
                 break;
@@ -75,19 +81,16 @@ public class GCMListenerService extends GcmListenerService {
                 // Notify MessagingFragment of new incoming message
                 Intent newMessage = new Intent("incomingP2PMessage");
                 newMessage.putExtra("message", message);
-                newMessage.putExtra("targetId", requestId);
+                newMessage.putExtra("targetId", userId);
                 boolean b = LocalBroadcastManager.getInstance(this).sendBroadcast(newMessage);
 
-                Log.d(TAG, "sent broadcast" + " " + b);
+                Log.d(TAG, "sent incomingP2PMessage broadcast" + " " + b);
 
                 break;
         }
     }
 
     private void sendResponseNotification(String messageType) {
-
-        System.out.println(getSharedPreferences("preferences_user", MODE_PRIVATE).getString("targetId", ""));
-        Log.d("GCMListenerService1", getSharedPreferences("preferences_user", MODE_PRIVATE).getString("targetId", ""));
 
         Intent intent = new Intent(this, MainAlarm.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -109,18 +112,36 @@ public class GCMListenerService extends GcmListenerService {
         notificationManager.notify(RESPONSE_NOTIFICATION_ID, notificationBuilder.build());
     }
 
-    private void sendRequestNotification(String requestId) {
+    private void sendRequestNotification(String requestId, String timeInMillis, String message, String alarmId) {
+
+        // convert String timeInMillis to readable time
+        Calendar calendar = Calendar.getInstance();
+
+        long lTimeInMillis = Long.parseLong(timeInMillis);
+        calendar.setTimeInMillis(lTimeInMillis);
+        int hour = calendar.get(Calendar.HOUR);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMinimumIntegerDigits(2);
+
+        String min = nf.format(minute);
+        String time = "" + hour + ":" + min;
 
         Intent i1 = new Intent(this, GCMResponseService.class);
         i1.putExtra("requestId", requestId);
         i1.putExtra("response", "yes");
+        i1.putExtra("timeInMillis", lTimeInMillis);
+        i1.putExtra("alarmId", alarmId);
+
         // using FLAG_ONE_SHOT only allows this particular PendingIntent to be used once
         PendingIntent yesIntent = PendingIntent.getService(this, 227, i1, PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
-                .setContentTitle("Tom requests for your services")
+                .setContentTitle( requestId + " @ " + time)
+                .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .addAction(R.drawable.common_google_signin_btn_icon_dark,

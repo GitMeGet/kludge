@@ -60,7 +60,7 @@ public class AlarmDetails {
     private static final String JSON_TARGETID = "targetId";
 
     public AlarmDetails(int nHour, int nMin, String strName, boolean bRepeat, int nSnooze,
-                        String uriRingtone, int nGame, int nMathQns, int nMathDifficulty, int nSleepDur) {
+                        String uriRingtone, int nGame, int nMathQns, int nMathDifficulty, int nSleepDur, String targetId) {
         this.mId = System.currentTimeMillis();
 
         this.nHour = nHour;
@@ -81,6 +81,8 @@ public class AlarmDetails {
         this.nMathDifficulty = nMathDifficulty;
 
         this.nSleepDur = nSleepDur;
+
+        this.targetId = targetId;
     }
 
     // constructor that accepts JSON object

@@ -33,6 +33,7 @@ public class MessagingFragment extends ListFragment {
     private boolean isP2PReceiverRegistered;
     private ArrayList<Pair<String, String>> messageArrayList;
     private MessageAdapter messageAdapter;
+    private long alarmId;
 
     private TextToSpeech mTextToSpeech;
 
@@ -56,14 +57,22 @@ public class MessagingFragment extends ListFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // get userId and targetId from SharedPreferences
         userId = getActivity().getSharedPreferences("preferences_user", getActivity().MODE_PRIVATE).getString("userId", "");
 
+        alarmId = getActivity().getIntent().getLongExtra("alarmId", -1);
+
+        AlarmDetails alarm = AlarmLab.get(getContext()).getAlarmDetails(alarmId);
+
         // *** potentially more than 1 unique targetId, shouldn't store in SharedPrefs; should be in AlarmDetails ***
-        targetId = getActivity().getIntent().getStringExtra("targetId");
+
+        if (alarm == null) // when waker starts fragment from MessagingActivity
+            targetId = getArguments().getString("targetId");
+        else // when wakee starts fragment from AlarmWake
+            targetId = alarm.getTargetId();
         Log.i("Messaging Fragment", "targetId is " + targetId);
 
         final EditText mP2PMessageEditText = (EditText) view.findViewById(R.id.P2PMessageEditText);
@@ -75,6 +84,8 @@ public class MessagingFragment extends ListFragment {
             public void onClick(View v) {
                 String message = mP2PMessageEditText.getText().toString();
                 mP2PMessageEditText.getText().clear();
+
+                System.out.println(userId + " " + targetId + " " + message);
 
                 sendP2PMessage(message);
 
@@ -108,8 +119,8 @@ public class MessagingFragment extends ListFragment {
 
     // post P2P message to server
     private void sendP2PMessage(String message) {
-        new GCMRegistrationIntentService.ServletPostAsyncTask().execute(new GCMParams(
-                getContext(), "sendP2PMessage", userId, "", targetId, message));
+        new ServletPostAsyncTask().execute(new GCMParams(
+                getContext(), "sendP2PMessage", userId, "", targetId, "", message, ""));
     }
 
     // set broadcast receiver to listen from GCMListenerService

@@ -1,7 +1,10 @@
 package com.kludge.wakemeup;
 
+import android.app.AlarmManager;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
@@ -13,7 +16,10 @@ import android.support.annotation.Nullable;
 
 public class GCMResponseService extends Service {
     String response;
+    String userId;
     String requestId;
+    long timeInMillis;
+    String alarmId;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -24,24 +30,36 @@ public class GCMResponseService extends Service {
 
         response = intent.getStringExtra("response");
         requestId = intent.getStringExtra("requestId"); //todo: user InstanceID or something
+        timeInMillis = intent.getLongExtra("timeInMillis", -1);
+        alarmId = intent.getStringExtra("alarmId");
+
+        System.out.println("1 " + requestId);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
+        userId = sharedPreferences.getString("userId", "");
 
         if (response.equals("yes")) {
 
-            // saves targetId in SharedPrefs
-            SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("targetId", requestId);
-            editor.apply();
+            // register with alarm manager to start activity to wake other user
+            AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+
+            Intent alarmIntent = new Intent(getApplicationContext(), WakerReceiver.class);
+            alarmIntent.putExtra("targetId", requestId);
+
+            PendingIntent wakeIntent = PendingIntent.getBroadcast(getApplicationContext(), 135,
+                    alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 6000, wakeIntent);
 
             // include userId
-            new GCMRegistrationIntentService.ServletPostAsyncTask().execute(new GCMParams(
-                    getApplicationContext(), "requestAccepted", GCMRegisterActivity.userId, "", requestId, ""));
+            new ServletPostAsyncTask().execute(new GCMParams(
+                    getApplicationContext(), "requestAccepted", userId , "", requestId, "", "", alarmId));
         }
 
         else {
             // include userId
-            new GCMRegistrationIntentService.ServletPostAsyncTask().execute(new GCMParams(
-                    getApplicationContext(), "requestRejected", GCMRegisterActivity.userId, "", requestId, ""));
+            new ServletPostAsyncTask().execute(new GCMParams(
+                    getApplicationContext(), "requestRejected", userId, "", requestId, "", "", ""));
         }
 
         stopSelf();
