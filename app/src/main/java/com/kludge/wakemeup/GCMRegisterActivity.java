@@ -32,19 +32,29 @@ public class GCMRegisterActivity extends AppCompatActivity {
     private ProgressBar mRegistrationProgressBar;
     private TextView mInformationTextView;
     private boolean isReceiverRegistered;
-
-    private AlarmDetails alarm;
-
-    public static String userId; // make sure to save userId
-    public static String targetId; // save targetId too!
-
+    private boolean isUserRegistered;
+    private long alarmId;
+    private String userId; // make sure to save userId
     EditText mUserIdEditText;
-    EditText mTargetIdEditText;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_gcm);
+
+        alarmId = getIntent().getLongExtra("alarmId", -1);
+
+        isUserRegistered = PreferenceManager.getDefaultSharedPreferences(this).
+                getBoolean("isUserRegistered", false);
+
+        // if user has already been registered previously
+        // proceed to request for other users to wake them up
+        if (isUserRegistered == true){
+            Intent i = new Intent(this, GCMRequestActivity.class);
+            i.putExtra("alarmId", alarmId);
+            finish();
+            startActivity(i);
+        }
 
         mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
@@ -57,6 +67,15 @@ public class GCMRegisterActivity extends AppCompatActivity {
                         .getBoolean("sentTokenToServer", false);
                 if (sentToken) {
                     mInformationTextView.setText(getString(R.string.gcm_send_message));
+
+                    sharedPreferences.edit().putBoolean("isUserRegistered", true).apply();
+
+                    // once passed gcm token to backend server, user is registered
+                    // proceed to request for other users to wake them up
+                    Intent i = new Intent(context, GCMRequestActivity.class);
+                    i.putExtra("alarmId", alarmId);
+                    startActivity(i);
+                    finish();
                 } else {
                     mInformationTextView.setText(getString(R.string.token_error_message));
                 }
@@ -68,20 +87,11 @@ public class GCMRegisterActivity extends AppCompatActivity {
         // Registering BroadcastReceiver to receive if GCMRegistrationService is successful
         registerReceiver();
 
-        // get alarm from AlarmLab
-        final long alarmId = getIntent().getLongExtra("alarmId", -1);
-        alarm = AlarmLab.get(getApplicationContext()).getAlarmDetails(alarmId);
-
         mUserIdEditText =(EditText) findViewById(R.id.userIdEditText);
-        mTargetIdEditText = (EditText) findViewById(R.id.targetIdEditText);
 
         // if user had previously entered userId, show it
         userId = getSharedPreferences("preferences_user", MODE_PRIVATE).getString("userId", "");
         mUserIdEditText.setText(userId);
-
-        // if user had previously entered targetId, show it
-        targetId = alarm.getTargetId();
-        mTargetIdEditText.setText(targetId);
 
         Button mSaveUserIdButton = (Button) findViewById(R.id.saveUserIdButton);
         assert mSaveUserIdButton != null;
@@ -90,12 +100,11 @@ public class GCMRegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (checkPlayServices()) {
                     // make sure userId field is filled
-                    if (!validateInputs(1))
+                    if (!validateInputs())
                         return;
 
                     // Start IntentService to register this application with GCM.
                     Intent intent = new Intent(getApplicationContext(), GCMRegistrationIntentService.class);
-
                     // add username to intent extra
                     userId = mUserIdEditText.getText().toString();
                     intent.putExtra("userId", userId);
@@ -111,58 +120,15 @@ public class GCMRegisterActivity extends AppCompatActivity {
             }
         });
 
-        // get timeInMillis
-        final String timeInMillis = Long.toString(alarm.getTimeInMillis());
-
-        // get message
-        final String requestMessage = "I have important business tmr";
-
-        Button mRequestTargetIdButton = (Button) findViewById(R.id.requestTargetIdButton);
-        assert mRequestTargetIdButton != null;
-        mRequestTargetIdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // make sure both input fields are filled
-                if (!validateInputs(2))
-                    return;
-
-                targetId = mTargetIdEditText.getText().toString();
-
-                new ServletPostAsyncTask().execute(new GCMParams(
-                        getApplicationContext(), "requestTarget", userId , "", targetId,
-                        timeInMillis, requestMessage, Long.toString(alarmId)));
-            }
-        });
-
-        Button mP2PMessagingButton = (Button) findViewById(R.id.buttonP2PMessaging);
-        assert mP2PMessagingButton != null;
-        mP2PMessagingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), MessagingActivity.class);
-                i.putExtra("targetId", targetId);
-                startActivity(i);
-            }
-        });
-
-
-
     }
 
     // make sure necessary input fields are filled
-    protected boolean validateInputs(int type){
+    protected boolean validateInputs(){
         // if no userId provided by user
         if (userId.equals("") && mUserIdEditText.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), "OI! Fill in userId leh!", Toast.LENGTH_LONG).show();
             return false;
         }
-
-        // if no targetId provided by user
-        else if (type == 2 && targetId.equals("") && mTargetIdEditText.getText().toString().equals("")) {
-            Toast.makeText(getApplicationContext(), "OI! Fill in targetId leh!", Toast.LENGTH_LONG).show();
-            return false;
-        }
-
         return true;
     }
 

@@ -33,7 +33,7 @@ public class GCMResponseService extends Service {
         timeInMillis = intent.getLongExtra("timeInMillis", -1);
         alarmId = intent.getStringExtra("alarmId");
 
-        System.out.println("1 " + requestId);
+        System.out.println("1 " + timeInMillis);
 
         SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
         userId = sharedPreferences.getString("userId", "");
@@ -49,7 +49,9 @@ public class GCMResponseService extends Service {
             PendingIntent wakeIntent = PendingIntent.getBroadcast(getApplicationContext(), 135,
                     alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 6000, wakeIntent);
+            // if timeInMillis is before current timeInMillis, add 24hrs
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, wakeIntent);
 
             // include userId
             new ServletPostAsyncTask().execute(new GCMParams(

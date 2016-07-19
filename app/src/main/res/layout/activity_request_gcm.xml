@@ -7,27 +7,20 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/userIdEditText"
-        android:hint="Enter User ID"/>
+        android:id="@+id/targetIdEditText"
+        android:hint="Enter Target User ID"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save User ID"
-        android:id="@+id/saveUserIdButton"/>
+        android:id="@+id/requestTargetIdButton"
+        android:text="SEND REQUEST TO TARGET ID"/>
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Log info"
-        android:id="@+id/informationTextView"/>
+        android:text="Start P2P Messaging"
+        android:id="@+id/buttonP2PMessaging"/>
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/registrationProgressBar"
-        android:indeterminate="false"/>
 
 </LinearLayout>

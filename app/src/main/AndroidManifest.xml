@@ -107,6 +107,7 @@
 
         <activity android:name=".MessagingActivity" />
         <activity android:name=".ScoreboardActivity" />
+        <activity android:name=".GCMRequestActivity"/>
     </application>
 
 </manifest>
