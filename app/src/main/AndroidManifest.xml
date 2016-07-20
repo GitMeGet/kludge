@@ -105,7 +105,9 @@
             android:name=".GCMResponseService"
             android:exported="false" />
 
-        <activity android:name=".MessagingActivity" />
+        <activity android:name=".MessagingActivity"
+                  android:windowSoftInputMode="stateVisible|adjustNothing"/>
+
         <activity android:name=".ScoreboardActivity" />
         <activity android:name=".GCMRequestActivity"/>
     </application>

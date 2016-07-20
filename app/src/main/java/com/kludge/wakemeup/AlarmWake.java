@@ -1,15 +1,22 @@
 package com.kludge.wakemeup;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class AlarmWake extends FragmentActivity {
 
@@ -19,8 +26,12 @@ public class AlarmWake extends FragmentActivity {
     public PowerManager.WakeLock wakeLock;
 
     Intent ringService;
-
     UserManager userManager;
+    private TextToSpeech mTextToSpeech;
+    private boolean isP2PReceiverRegistered;
+    public static ArrayList<Pair<String, String>> messageArrayList;
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -51,7 +62,7 @@ public class AlarmWake extends FragmentActivity {
         userManager = new UserManager(getApplicationContext());
 
         final Context c = getApplicationContext();
-        long alarmId = getIntent().getLongExtra("alarmId", 0);
+        final long alarmId = getIntent().getLongExtra("alarmId", 0);
         alarm = AlarmLab.get(c).getAlarmDetails(alarmId);
 
         // wake_lock
@@ -134,8 +145,41 @@ public class AlarmWake extends FragmentActivity {
             }
         });
 
+
+        Button mStartP2PMessaging = (Button) findViewById(R.id.startP2PMessagingButton);
+
+        // make button invisible
+        mStartP2PMessaging.setVisibility(View.INVISIBLE);
+
         // init fragment if there's a targetId
         if (!alarm.getTargetId().equals("")) {
+
+            final String targetId = alarm.getTargetId();
+
+            // enable startP2PMessaging button
+            mStartP2PMessaging.setVisibility(View.VISIBLE);
+            mStartP2PMessaging.setText("Contact " + targetId);
+
+            mStartP2PMessaging.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Intent i = new Intent(getApplicationContext(), MessagingActivity.class);
+
+                    i.putExtra("targetId", targetId);
+
+                    startActivity(i);
+                }
+            });
+
+            messageArrayList = new ArrayList<>();
+
+            initTextToSpeech();
+
+            registerReceiver();
+
+
+            /*
             // check if activity using layout with fragment_container FrameLayout
             if (findViewById(R.id.fragment_container) != null) {
 
@@ -157,11 +201,64 @@ public class AlarmWake extends FragmentActivity {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, messagingFragment).commit();
             }
+            */
+        }
+
+
+    }
+
+    private void initTextToSpeech(){
+        mTextToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR)
+                    mTextToSpeech.setLanguage(Locale.UK);
+                else
+                    Toast.makeText(getParent(), "textToSpeech init failed", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void registerReceiver() {
+        if (!isP2PReceiverRegistered) {
+            LocalBroadcastManager.getInstance(getParent()).registerReceiver(mP2PMessageBroadcastReceiver,
+                    new IntentFilter("incomingP2PMessage"));
+            isP2PReceiverRegistered = true;
         }
     }
+
+    // set broadcast receiver to listen from GCMListenerService
+    private BroadcastReceiver mP2PMessageBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String message = intent.getStringExtra("message");
+            String targetId = intent.getStringExtra("targetId");
+
+            Pair<String, String> incomingP2PMessage = new Pair<>(targetId, message);
+            messageArrayList.add(incomingP2PMessage);
+
+            // read out incomingP2P message
+            mTextToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, "TextToSpeechIncomingP2PMessage");
+        }
+    };
 
     // disables back button
     @Override
     public void onBackPressed() {
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        // unregister P2P message broadcast receiver
+        LocalBroadcastManager.getInstance(getParent()).unregisterReceiver(mP2PMessageBroadcastReceiver);
+        isP2PReceiverRegistered = false;
+
+        // release text to speech resources
+        mTextToSpeech.stop();
+        mTextToSpeech.shutdown();
+
+        super.onDestroy();
     }
 }

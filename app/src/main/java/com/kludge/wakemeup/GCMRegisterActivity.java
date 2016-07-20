@@ -47,6 +47,7 @@ public class GCMRegisterActivity extends AppCompatActivity {
         isUserRegistered = PreferenceManager.getDefaultSharedPreferences(this).
                 getBoolean("isUserRegistered", false);
 
+        /*
         // if user has already been registered previously
         // proceed to request for other users to wake them up
         if (isUserRegistered == true){
@@ -55,6 +56,7 @@ public class GCMRegisterActivity extends AppCompatActivity {
             finish();
             startActivity(i);
         }
+        */
 
         mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {

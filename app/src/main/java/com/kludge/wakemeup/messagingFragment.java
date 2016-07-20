@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -19,24 +18,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 /*
  * Created by Yu Peng on 13/7/2016.
  */
 public class MessagingFragment extends ListFragment {
 
+    private long alarmId;
     public String userId, targetId;
     private boolean isP2PReceiverRegistered;
     private ArrayList<Pair<String, String>> messageArrayList;
     private MessageAdapter messageAdapter;
-    private long alarmId;
-
-    private TextToSpeech mTextToSpeech;
-
+    ListView messageList;
 
     @Nullable
     @Override
@@ -45,13 +40,17 @@ public class MessagingFragment extends ListFragment {
         View rootView = inflater.inflate(R.layout.fragment_messaging, container, false);
 
         // create adapter for messages ListView
-        ListView messageList = (ListView) rootView.findViewById(android.R.id.list);
-        assert messageList != null;
-        messageArrayList = new ArrayList<>();
+        messageList = (ListView) rootView.findViewById(android.R.id.list);
+        messageList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+
+        messageArrayList = AlarmWake.messageArrayList;
+
+        if (messageArrayList == null)
+            messageArrayList = new ArrayList<>();
+
         messageAdapter = new MessageAdapter(getContext(), messageArrayList);
 
         setListAdapter(messageAdapter);
-
 
         return rootView;
     }
@@ -101,21 +100,7 @@ public class MessagingFragment extends ListFragment {
             }
         });
 
-        initTextToSpeech();
     }
-
-    private void initTextToSpeech(){
-        mTextToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR)
-                    mTextToSpeech.setLanguage(Locale.UK);
-                else
-                    Toast.makeText(getContext(), "textToSpeech init failed", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
 
     // post P2P message to server
     private void sendP2PMessage(String message) {
@@ -128,17 +113,10 @@ public class MessagingFragment extends ListFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            String message = intent.getStringExtra("message");
-            String targetId = intent.getStringExtra("targetId");
-
-            Pair<String, String> incomingP2PMessage = new Pair<>(targetId, message);
-            messageArrayList.add(incomingP2PMessage);
-
             // refresh messageAdapter
             messageAdapter.notifyDataSetChanged();
 
-            // read out incomingP2P message
-            mTextToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, "TextToSpeechIncomingP2PMessage");
+            messageList.smoothScrollToPosition(messageAdapter.getCount()-1);
         }
     };
 
@@ -156,7 +134,6 @@ public class MessagingFragment extends ListFragment {
         // re-register P2P broadcast receiver
         registerReceiver();
 
-        initTextToSpeech();
     }
 
     @Override
@@ -164,10 +141,6 @@ public class MessagingFragment extends ListFragment {
         // unregister P2P message broadcast receiver
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mP2PMessageBroadcastReceiver);
         isP2PReceiverRegistered = false;
-
-        // release text to speech resources
-        mTextToSpeech.stop();
-        mTextToSpeech.shutdown();
 
         super.onPause();
     }

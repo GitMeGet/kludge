@@ -50,8 +50,10 @@ public class GCMResponseService extends Service {
                     alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             // if timeInMillis is before current timeInMillis, add 24hrs
-
-            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, wakeIntent);
+            if (timeInMillis < System.currentTimeMillis())
+                alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis + (long) 8.64e+7, wakeIntent);
+            else
+                alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, wakeIntent);
 
             // include userId
             new ServletPostAsyncTask().execute(new GCMParams(

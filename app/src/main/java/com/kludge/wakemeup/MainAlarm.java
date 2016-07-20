@@ -241,9 +241,11 @@ public class MainAlarm extends AppCompatActivity {
     private void updateAll(AlarmDetails alarm) {
         if (alarm.isOnState()) {
             alarm.registerAlarmIntent(getApplicationContext(), AlarmDetails.ADD_ALARM);
-
+            
             // update notification
-            createNotification(ID_NOTIFICATION_ALARM, alarm);
+            if (mContext.getSharedPreferences("preferences_main", Context.MODE_PRIVATE)
+                    .getBoolean("preference_persistent_notification", false))
+                createNotification(ID_NOTIFICATION_ALARM, alarm);
         }
 
         //save the alarms

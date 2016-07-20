@@ -298,7 +298,7 @@ public class PongGameActivity extends Activity {
 
             if (timeToSleep > 0) {
                 try {
-                    ourThread.sleep(timeToSleep);
+                    Thread.sleep(timeToSleep);
                 } catch (InterruptedException e) {
                 }
             }
