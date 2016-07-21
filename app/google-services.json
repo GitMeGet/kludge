@@ -1,20 +1,27 @@
 {
   "project_info": {
-    "project_number": "520954475412",
-    "project_id": "firebase-wakemeup"
+    "project_number": "749927717157",
+    "firebase_url": "https://kludgealarm.firebaseio.com",
+    "project_id": "kludgealarm",
+    "storage_bucket": "kludgealarm.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:520954475412:android:69d523ed3e42a25a",
+        "mobilesdk_app_id": "1:749927717157:android:43391e6a11c771b2",
         "android_client_info": {
           "package_name": "com.kludge.wakemeup"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "749927717157-helbscm61mj3p85i6mt37kng94kfd8kl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBRgKPPTBbDlfazla-N1_IOOuBmt4lzeiM"
+          "current_key": "AIzaSyCXdxIvP5E8h7fg9dKSWjxOoHIACL3TkAA"
         }
       ],
       "services": {
@@ -26,7 +33,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

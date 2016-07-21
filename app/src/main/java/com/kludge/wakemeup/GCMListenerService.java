@@ -11,15 +11,17 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.android.gms.gcm.GcmListenerService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.Map;
 
 /*
  * Created by Yu Peng on 7/7/2016.
  */
-public class GCMListenerService extends GcmListenerService {
+public class GCMListenerService extends FirebaseMessagingService {
 
     private static final String TAG = "GCMListenerService";
     public static final int RESPONSE_NOTIFICATION_ID = 7;
@@ -43,7 +45,11 @@ public class GCMListenerService extends GcmListenerService {
 
 
     @Override
-    public void onMessageReceived(String from, Bundle data) {
+    public void onMessageReceived(RemoteMessage message) {
+        String from = message.getFrom();
+        Map data = message.getData();
+
+        /*
         String messageType = data.getString("messageType");
         String userId = data.getString("userId");
         String message = data.getString("message");
@@ -88,6 +94,7 @@ public class GCMListenerService extends GcmListenerService {
 
                 break;
         }
+        */
     }
 
     private void sendResponseNotification(String messageType) {

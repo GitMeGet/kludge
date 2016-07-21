@@ -6,12 +6,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-    <permission
-        android:name="com.kludge.wakemeup.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-
-    <uses-permission android:name="com.kludge.wakemeup.permission.C2D_MESSAGE" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_alarm"
@@ -64,36 +58,19 @@
 
         <activity android:name=".GCMRegisterActivity" />
 
-        <!-- [START gcm_receiver] -->
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-
-                <category android:name="com.kludge.wakemeup" />
-            </intent-filter>
-        </receiver>
-        <!-- [END gcm_receiver] -->
-
-
         <!-- [START gcm_listener] -->
         <service
-            android:name=".GCMListenerService"
-            android:exported="false" >
-            <intent-filter android:priority="10000" >
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            android:name=".GCMListenerService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <!-- [END gcm_listener] -->
         <!-- [START instanceId_listener] -->
         <service
-            android:name=".GCMInstanceIDListenerService"
-            android:exported="false" >
+            android:name=".GCMInstanceIDListenerService">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <!-- [END instanceId_listener] -->
