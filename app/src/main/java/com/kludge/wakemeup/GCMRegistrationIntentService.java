@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import java.io.IOException;
 
@@ -46,7 +47,7 @@ public class GCMRegistrationIntentService extends IntentService {
 
             // register userId and token with backend server
             String userId = intent.getStringExtra("userId");
-            sendRegistrationToServer(userId, "<token>");
+            sendRegistrationToServer(userId, "ffff");
 
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,

@@ -7,15 +7,16 @@ import android.content.Context;
  */
 public class GCMParams {
 
-    public Context mContext;
-    public String type;
-    public String userId;
-    public String token;
-    public String targetId;
-    public String timeInMillis;
-    public String message;
-    public String alarmId;
+    private Context mContext;
+    private String type;
+    private String userId;
+    private String token;
+    private String targetId;
+    private String timeInMillis;
+    private String message;
+    private String alarmId;
 
+    public GCMParams(){}
 
     public GCMParams(Context context, String type, String userId, String token, String targetId,
                      String timeInMillis, String message, String alarmId){
@@ -29,4 +30,67 @@ public class GCMParams {
         this.alarmId = alarmId;
     }
 
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setTargetId(String targetId) {
+        this.targetId = targetId;
+    }
+
+    public void setTimeInMillis(String timeInMillis) {
+        this.timeInMillis = timeInMillis;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setAlarmId(String alarmId) {
+        this.alarmId = alarmId;
+    }
+
+    public Context getmContext() {
+        return mContext;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getTargetId() {
+        return targetId;
+    }
+
+    public String getTimeInMillis() {
+        return timeInMillis;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getAlarmId() {
+        return alarmId;
+    }
 }

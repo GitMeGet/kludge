@@ -25,6 +25,8 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -127,6 +129,7 @@ public class MainAlarm extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
         setContentView(R.layout.activity_main_alarm);
 
         sharedPrefs = getSharedPreferences("preferences_main", MODE_PRIVATE);

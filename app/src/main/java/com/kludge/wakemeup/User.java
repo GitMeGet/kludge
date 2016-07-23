@@ -1,28 +1,36 @@
 package com.kludge.wakemeup;
 
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Id;
+
 
 /**
  * Created by sylta on 15/7/2016.
  */
 
-@Entity
-public class UserEntityObjectify {
+public class User {
 
-    @Id Long id;
+    Long id;
     private String username;
     private String userID;
     private String tokenID;
     private int snoozeFreq;
 
-    public UserEntityObjectify(String username, String userID, String tokenID, int snoozeFreq){
+    public User() {}
+
+    public User(String username, String userID, String tokenID, int snoozeFreq){
 
         this.username = username;
         this.userID = userID;
         this.tokenID = tokenID;
         this.snoozeFreq = snoozeFreq;
 
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {return username;}

@@ -33,14 +33,14 @@ public class ServletPostAsyncTask extends AsyncTask<GCMParams, Void, String> {
 
     @Override
     protected String doInBackground(GCMParams... params) {
-        context = params[0].mContext;
-        type = params[0].type;
-        token = params[0].token;
-        userId = params[0].userId;
-        targetId = params[0].targetId;
-        timeInMillis = params[0].timeInMillis;
-        message = params[0].message;
-        alarmId = params[0].alarmId;
+        context = params[0].getmContext();
+        type = params[0].getType();
+        token = params[0].getToken();
+        userId = params[0].getUserId();
+        targetId = params[0].getTargetId();
+        timeInMillis = params[0].getTimeInMillis();
+        message = params[0].getMessage();
+        alarmId = params[0].getAlarmId();
 
         try {
             // Set up the request
