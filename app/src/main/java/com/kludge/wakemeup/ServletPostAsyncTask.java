@@ -45,7 +45,7 @@ public class ServletPostAsyncTask extends AsyncTask<GCMParams, Void, String> {
         try {
             // Set up the request
             //URL url = new URL("http://10.0.2.2:8080/hello");
-            URL url = new URL("http://testbackend-1355.appspot.com/hello");
+            URL url = new URL("http://wakemeup-1373.appspot.com/hello");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoInput(true);

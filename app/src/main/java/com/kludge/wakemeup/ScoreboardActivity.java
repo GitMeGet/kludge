@@ -16,27 +16,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.example.sylta.myapplication.wmudatastore.myApi.MyApi;
-import com.example.sylta.myapplication.wmudatastore.myApi.model.*;
-import com.example.sylta.myapplication.wmudatastore.myApi.model.UserEntity;
+
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ScoreboardActivity extends AppCompatActivity {
 
     ArrayList<Pair<String, String>> userInfo = new ArrayList<>(); //pair of strings of USERNAME + SNOOZEFREQ
-    Firebase rootRef = new Firebase("https://kludgealarm.firebaseio.com"); //firebase ref
+    Firebase rootRef = new Firebase("https://wakemeup-1373.firebaseio.com"); //firebase ref
 
+
+    ScoreAdapter scoreAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,21 +45,25 @@ public class ScoreboardActivity extends AppCompatActivity {
 
         ListView scoreList = (ListView) findViewById(R.id.view_scoreboard_list);
         assert scoreList != null;
-        ScoreAdapter scoreAdapter = new ScoreAdapter(this, userInfo);
+        scoreAdapter = new ScoreAdapter(this, userInfo);
 
         scoreList.setAdapter(scoreAdapter);
+        scoreAdapter.notifyDataSetChanged();
     }
 
     //fetch data from firebase database and load in the arraylist with data
     private void loadUsers(final ArrayList<Pair<String, String>> userInfo){
-        rootRef.child("users");
 
-        rootRef.addValueEventListener(new ValueEventListener() {
+        rootRef.child("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot data : dataSnapshot.getChildren()){
-                    userInfo.add(new Pair<>((String) data.getValue(), "snoozy"));
+                    HashMap userMap = (HashMap) data.getValue();
+                    userInfo.add(new Pair<>((String)userMap.get("username"),
+                            (Integer.parseInt(userMap.get("snoozeFreq").toString())>0)?"has snoozed "+ userMap.get("snoozeFreq")+" times already!":"has not snoozed yet!"));
                 }
+
+                scoreAdapter.notifyDataSetChanged();
             }
 
             @Override

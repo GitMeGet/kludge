@@ -14,7 +14,6 @@ public class GCMInstanceIDListenerService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyInstanceIDLS";
 
-
     /**
      * Called if InstanceID token is updated. This may occur if the security of
      * the previous token had been compromised. Note that this is also called
@@ -29,7 +28,7 @@ public class GCMInstanceIDListenerService extends FirebaseInstanceIdService {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + refreshedToken);
         // TODO: Implement this method to send any registration to your app's servers.
-        sendRegistrationToServer("shitzu", refreshedToken);
+        //sendRegistrationToServer("shitzu", refreshedToken);
     }
     // [END refresh_token]
 

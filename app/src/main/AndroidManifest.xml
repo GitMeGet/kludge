@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kludge.wakemeup" >
+    package="com.kludge.wakemeup">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,13 +12,13 @@
         android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainAlarm"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,22 +53,20 @@
             android:exported="true" />
 
         <receiver android:name=".AlarmReceiver" />
-        <receiver android:name=".WakerReceiver"/>
+        <receiver android:name=".WakerReceiver" />
         <receiver android:name=".NotificationReceiver" />
 
         <activity android:name=".GCMRegisterActivity" />
 
         <!-- [START gcm_listener] -->
-        <service
-            android:name=".GCMListenerService">
+        <service android:name=".GCMListenerService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <!-- [END gcm_listener] -->
         <!-- [START instanceId_listener] -->
-        <service
-            android:name=".GCMInstanceIDListenerService">
+        <service android:name=".GCMInstanceIDListenerService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -82,11 +80,12 @@
             android:name=".GCMResponseService"
             android:exported="false" />
 
-        <activity android:name=".MessagingActivity"
-                  android:windowSoftInputMode="stateVisible|adjustNothing"/>
-
+        <activity
+            android:name=".MessagingActivity"
+            android:windowSoftInputMode="stateVisible|adjustNothing" />
         <activity android:name=".ScoreboardActivity" />
-        <activity android:name=".GCMRequestActivity"/>
+        <activity android:name=".GCMRequestActivity" />
+        <activity android:name=".RegisterActivity"></activity>
     </application>
 
 </manifest>

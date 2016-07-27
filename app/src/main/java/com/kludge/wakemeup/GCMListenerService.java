@@ -43,27 +43,36 @@ public class GCMListenerService extends FirebaseMessagingService {
      *     - Update UI.
      */
 
-
     @Override
-    public void onMessageReceived(RemoteMessage message) {
-        String from = message.getFrom();
-        Map data = message.getData();
+    public void onMessageReceived(RemoteMessage rMessage) {
+        String from = rMessage.getFrom();
+        Map data = rMessage.getData();
+        String notfication = "";
 
-        /*
-        String messageType = data.getString("messageType");
-        String userId = data.getString("userId");
-        String message = data.getString("message");
-        String timeInMillis = data.getString("timeInMillis");
-        String alarmId = data.getString("alarmId");
+        if(rMessage.getNotification() != null)
+            notfication = rMessage.getNotification().getBody();
+
+        String messageType = (String) data.get("messageType");
+        String userId = (String)data.get("userId");
+        String message = (String)data.get("message");
+        String timeInMillis = (String)data.get("timeInMillis");
+        String alarmId = (String) data.get("alarmId");
 
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + messageType);
+        Log.d(TAG, "Notif: " + notfication);
+
+        if(notfication != null){
+            System.out.println(notfication);
+        }
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
         } else {
             // normal downstream message.
         }
+
+
 
         assert messageType != null;
         switch (messageType) {
@@ -94,7 +103,6 @@ public class GCMListenerService extends FirebaseMessagingService {
 
                 break;
         }
-        */
     }
 
     private void sendResponseNotification(String messageType) {

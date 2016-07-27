@@ -10,14 +10,14 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/wmu_datastore" />
+            <option value="$PROJECT_DIR$/fcm_backend" />
           </set>
         </option>
         <option name="myModules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/wmu_datastore" />
+            <option value="$PROJECT_DIR$/fcm_backend" />
           </set>
         </option>
       </GradleProjectSettings>

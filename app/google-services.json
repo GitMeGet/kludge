@@ -1,27 +1,47 @@
 {
   "project_info": {
-    "project_number": "749927717157",
-    "firebase_url": "https://kludgealarm.firebaseio.com",
-    "project_id": "kludgealarm",
-    "storage_bucket": "kludgealarm.appspot.com"
+    "project_number": "744483356919",
+    "firebase_url": "https://wakemeup-1373.firebaseio.com",
+    "project_id": "wakemeup-1373",
+    "storage_bucket": "wakemeup-1373.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:749927717157:android:43391e6a11c771b2",
+        "mobilesdk_app_id": "1:744483356919:android:43391e6a11c771b2",
         "android_client_info": {
           "package_name": "com.kludge.wakemeup"
         }
       },
       "oauth_client": [
         {
-          "client_id": "749927717157-helbscm61mj3p85i6mt37kng94kfd8kl.apps.googleusercontent.com",
+          "client_id": "744483356919-jqitm55h2e4kjiep1ps8ejoddc4h8ul8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kludge.wakemeup",
+            "certificate_hash": "86AC8730AD88D36B955E2C3CCDBB6DAD96B878D9"
+          }
+        },
+        {
+          "client_id": "744483356919-6liq24la9e1re25p5ln28imml1oduojs.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "744483356919-ju4jb67p25lpn49l4vr2fjjik2lel20p.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "744483356919-henu3agtnbtsmmepulntln3tqaq11o4c.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "744483356919-5n1pi2ai6fmqd778u0k0qte1hpkj5h5g.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCXdxIvP5E8h7fg9dKSWjxOoHIACL3TkAA"
+          "current_key": "AIzaSyDvUf8kGn_IcbykgWV2UONJZa20QUtAiSg"
         }
       ],
       "services": {
@@ -29,8 +49,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "744483356919-6liq24la9e1re25p5ln28imml1oduojs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

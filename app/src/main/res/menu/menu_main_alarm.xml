@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/menu_login"
+        android:title="Login"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_perm_identity" />
+
     <item android:id="@+id/menu_scoreboard"
         android:title="Scoreboard"
         app:showAsAction="always"

@@ -15,10 +15,18 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class AlarmWake extends FragmentActivity {
+
+    Firebase rootRef = new Firebase("https://wakemeup-1373.firebaseio.com"); //firebase ref
 
     public static final int MATH_GAME = 1;
     public static final int PONG_GAME = 2;
@@ -31,7 +39,8 @@ public class AlarmWake extends FragmentActivity {
     private boolean isP2PReceiverRegistered;
     public static ArrayList<Pair<String, String>> messageArrayList;
 
-
+    FirebaseUser fUser;
+    DatabaseReference mDatabase;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -73,6 +82,10 @@ public class AlarmWake extends FragmentActivity {
                 "MyWakelockTag");
         wakeLock.acquire();
 
+        //FCM
+        fUser = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         //make it RING
         ringService = new Intent(this, RingtoneService.class);
         ringService.putExtra("ringtone", alarm.getRingtone());
@@ -92,6 +105,9 @@ public class AlarmWake extends FragmentActivity {
 
                 userManager.increaseScore(UserManager.SCORE_THRESHOLD - userManager.getSnooze());
                 userManager.resetSnooze();
+
+                //reset snoozeFreq to 0 in fcm database
+                mDatabase.child("users").child(fUser.getDisplayName()).child("snoozeFreq").setValue("0");
 
                 switch(alarm.getGame()){
                     case AlarmDetails.GAME_DISABLED:
@@ -130,6 +146,10 @@ public class AlarmWake extends FragmentActivity {
                     stopService(ringService);
 
                     userManager.decreaseScore(UserManager.SNOOZE_PRICE);
+
+                    userManager.increaseSnooze();
+                    //update fcm database on snoozeFreq, increment
+                    mDatabase.child("users").child(fUser.getDisplayName()).child("snoozeFreq").setValue(userManager.getSnooze());
 
                     // re-register snoozed alarm
                     alarm.registerAlarmIntent(c, AlarmDetails.SNOOZE_ALARM);
@@ -221,7 +241,7 @@ public class AlarmWake extends FragmentActivity {
 
     private void registerReceiver() {
         if (!isP2PReceiverRegistered) {
-            LocalBroadcastManager.getInstance(getParent()).registerReceiver(mP2PMessageBroadcastReceiver,
+            LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mP2PMessageBroadcastReceiver,
                     new IntentFilter("incomingP2PMessage"));
             isP2PReceiverRegistered = true;
         }

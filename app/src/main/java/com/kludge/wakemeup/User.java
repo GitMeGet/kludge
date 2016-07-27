@@ -1,11 +1,12 @@
 package com.kludge.wakemeup;
 
 
+import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
  * Created by sylta on 15/7/2016.
  */
-
+@IgnoreExtraProperties
 public class User {
 
     Long id;

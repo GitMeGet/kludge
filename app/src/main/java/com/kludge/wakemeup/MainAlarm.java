@@ -26,6 +26,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -33,6 +38,8 @@ import java.util.ArrayList;
 public class MainAlarm extends AppCompatActivity {
 
     //keys
+    static final int ID_GOOGLE_SIGNIN = 400;
+
     static final int ID_ADD_ALARM = 100;
     static final int ID_EDIT_ALARM = 101;
 
@@ -52,6 +59,10 @@ public class MainAlarm extends AppCompatActivity {
 
     //shared preferences
     private SharedPreferences sharedPrefs;
+
+    //firebase
+    private DatabaseReference mDatabase;
+    private FirebaseUser fUser;
 
     protected static void createNotification(int type, AlarmDetails alarm) {
 
@@ -134,6 +145,11 @@ public class MainAlarm extends AppCompatActivity {
 
         sharedPrefs = getSharedPreferences("preferences_main", MODE_PRIVATE);
 
+        //google auth login
+        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+            signIn();
+        }
+
         // for notifications
         mContext = this;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -156,6 +172,12 @@ public class MainAlarm extends AppCompatActivity {
         //sets up listView for contextMenu
         registerForContextMenu(listView);
     }
+
+    public void signIn(){
+        Intent i = new Intent(this, RegisterActivity.class);
+        startActivity(i);
+    }
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
@@ -312,6 +334,10 @@ public class MainAlarm extends AppCompatActivity {
         Intent intent;
 
         switch (item.getItemId()) {
+            case R.id.menu_login:
+                intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(intent);
+                break;
             case R.id.menu_scoreboard:
                 intent = new Intent(getApplicationContext(), ScoreboardActivity.class);
                 startActivity(intent);
@@ -323,6 +349,7 @@ public class MainAlarm extends AppCompatActivity {
                 intent = new Intent(getApplicationContext(), MainPreference.class);
                 startActivity(intent);
                 break;
+
             default:
                 return false;
         }

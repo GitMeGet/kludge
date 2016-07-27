@@ -9,10 +9,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+
 /*
  * Created by Yu Peng on 19/7/2016.
  */
 public class GCMRequestActivity extends AppCompatActivity {
+
+    public static final String SENDER_ID = "744483356919";
 
     public static String targetId; // save targetId too!
     EditText mTargetIdEditText;
@@ -55,6 +60,20 @@ public class GCMRequestActivity extends AppCompatActivity {
                     return;
 
                 targetId = mTargetIdEditText.getText().toString();
+
+                //todo://IMPLEMENT THIS
+                FirebaseMessaging fm = FirebaseMessaging.getInstance();
+                fm.send(new RemoteMessage.Builder(SENDER_ID + "@gcm.googleapis.com")
+                        .setMessageId("234")//Integer.toString(msgId.incrementAndGet()))
+                        .addData("my_message", "Hello World")
+                        .addData("my_action","SAY_HELLO")
+                        .addData("messageType", "requestTarget")
+                        .addData("userId", userId)
+                        .addData("targetId", targetId)
+                        .addData("timeInMillis", timeInMillis)
+                        .addData("requestMessage", requestMessage)
+                        .addData("alarmId", Long.toString(alarmId))
+                        .build());
 
                 new ServletPostAsyncTask().execute(new GCMParams(
                         getApplicationContext(), "requestTarget", userId , "", targetId,
