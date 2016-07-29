@@ -32,13 +32,14 @@ public class GCMInstanceIDListenerService extends FirebaseInstanceIdService {
     }
     // [END refresh_token]
 
+    /*
     // sends userId/token pair to backend server
     private void sendRegistrationToServer(String userId, String token) {
 
         new ServletPostAsyncTask().execute(new GCMParams(
-                getApplicationContext(), "saveToken", userId, token, "", "", "", "")
+                getApplicationContext(), "saveToken", userId,  token, "", "", "", "")
         );
 
     }
-
+    */
 }

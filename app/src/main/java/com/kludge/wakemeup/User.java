@@ -14,6 +14,7 @@ public class User {
     private String userID;
     private String tokenID;
     private int snoozeFreq;
+    private String lastAlarmTime;
 
     public User() {}
 
@@ -23,7 +24,7 @@ public class User {
         this.userID = userID;
         this.tokenID = tokenID;
         this.snoozeFreq = snoozeFreq;
-
+        this.lastAlarmTime = "NULL";
     }
 
     public Long getId() {
@@ -38,6 +39,13 @@ public class User {
     public String getUserID() {return userID;}
     public String getTokenID() {return tokenID;}
     public int getSnoozeFreq() {return snoozeFreq;}
+    public String getLastAlarmTime() {
+        return lastAlarmTime;
+    }
+
+    public void setLastAlarmTime(String lastAlarmTime) {
+        this.lastAlarmTime = lastAlarmTime;
+    }
 
     public void setUsername(String username) {this.username = username;}
     public void setUserID(String userID) {this.userID = userID;}

@@ -41,6 +41,8 @@
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
 
+    //REQUEST ACTIVITY
+    <string name="request_instruction">Please hold and select a user to request to WakeYouUp!</string>
 
     //SCOREBOARD
     <string name="scoreboard_username">USERNAME</string>

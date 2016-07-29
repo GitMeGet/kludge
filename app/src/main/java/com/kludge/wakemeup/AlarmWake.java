@@ -150,6 +150,8 @@ public class AlarmWake extends FragmentActivity {
                     userManager.increaseSnooze();
                     //update fcm database on snoozeFreq, increment
                     mDatabase.child("users").child(fUser.getDisplayName()).child("snoozeFreq").setValue(userManager.getSnooze());
+                    //set the current alarm time in database
+                    mDatabase.child("users").child(fUser.getDisplayName()).child("lastAlarmTime").setValue(""+alarm.getHour()+":"+(alarm.getMin()<10?" "+alarm.getMin():alarm.getMin()));
 
                     // re-register snoozed alarm
                     alarm.registerAlarmIntent(c, AlarmDetails.SNOOZE_ALARM);

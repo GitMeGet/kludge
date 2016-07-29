@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 public class GCMResponseService extends Service {
     String response;
     String userId;
+    String username;
     String requestId;
     long timeInMillis;
     String alarmId;
@@ -36,7 +37,9 @@ public class GCMResponseService extends Service {
         System.out.println("1 " + timeInMillis);
 
         SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
+
         userId = sharedPreferences.getString("userId", "");
+        username = sharedPreferences.getString("username", "");
 
         if (response.equals("yes")) {
 
@@ -57,13 +60,13 @@ public class GCMResponseService extends Service {
 
             // include userId
             new ServletPostAsyncTask().execute(new GCMParams(
-                    getApplicationContext(), "requestAccepted", userId , "", requestId, "", "", alarmId));
+                    getApplicationContext(), "requestAccepted", userId, username , "", requestId, "", "", alarmId));
         }
 
         else {
             // include userId
             new ServletPostAsyncTask().execute(new GCMParams(
-                    getApplicationContext(), "requestRejected", userId, "", requestId, "", "", ""));
+                    getApplicationContext(), "requestRejected", userId, username, "", requestId, "", "", ""));
         }
 
         stopSelf();

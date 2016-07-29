@@ -387,14 +387,14 @@ class AlarmAdapter extends ArrayAdapter<AlarmDetails> {
         socializeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), GCMRegisterActivity.class);
+                Intent i = new Intent(getContext(), GCMRequestActivity.class);
 
+                i.putExtra("userId", getContext().getSharedPreferences("preferences_user", Context.MODE_PRIVATE).getString("userID",""));
                 i.putExtra("alarmId", alarm.getId());
 
                 getContext().startActivity(i);
             }
         });
-
 
         aSwitch.setOnClickListener(new View.OnClickListener() {
             @Override

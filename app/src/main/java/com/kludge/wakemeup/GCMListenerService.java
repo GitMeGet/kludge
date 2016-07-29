@@ -11,10 +11,19 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -26,6 +35,9 @@ public class GCMListenerService extends FirebaseMessagingService {
     private static final String TAG = "GCMListenerService";
     public static final int RESPONSE_NOTIFICATION_ID = 7;
     public static final int REQUEST_NOTIFICATION_ID = 17;
+
+    FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
     /**
@@ -54,6 +66,7 @@ public class GCMListenerService extends FirebaseMessagingService {
 
         String messageType = (String) data.get("messageType");
         String userId = (String)data.get("userId");
+        String username = (String)data.get("username");
         String message = (String)data.get("message");
         String timeInMillis = (String)data.get("timeInMillis");
         String alarmId = (String) data.get("alarmId");
@@ -77,7 +90,7 @@ public class GCMListenerService extends FirebaseMessagingService {
         assert messageType != null;
         switch (messageType) {
             case "requestTarget":
-                sendRequestNotification(userId, timeInMillis, message, alarmId);
+                sendRequestNotification(userId, username, timeInMillis, message, alarmId);
                 break;
             case "requestAccepted":
 
@@ -127,7 +140,7 @@ public class GCMListenerService extends FirebaseMessagingService {
         notificationManager.notify(RESPONSE_NOTIFICATION_ID, notificationBuilder.build());
     }
 
-    private void sendRequestNotification(String requestId, String timeInMillis, String message, String alarmId) {
+    private void sendRequestNotification(String requestId, String username,String timeInMillis, String message, String alarmId) {
 
         // convert String timeInMillis to readable time
         Calendar calendar = Calendar.getInstance();
@@ -155,7 +168,7 @@ public class GCMListenerService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
-                .setContentTitle( requestId + " @ " + time)
+                .setContentTitle( username + " @ " + time)
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)

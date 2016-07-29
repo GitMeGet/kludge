@@ -47,7 +47,9 @@ public class GCMRegistrationIntentService extends IntentService {
 
             // register userId and token with backend server
             String userId = intent.getStringExtra("userId");
-            sendRegistrationToServer(userId, FirebaseInstanceId.getInstance().getToken());
+            String username = intent.getStringExtra("username");
+
+            sendRegistrationToServer(userId, username, FirebaseInstanceId.getInstance().getToken());
 
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
@@ -75,12 +77,12 @@ public class GCMRegistrationIntentService extends IntentService {
      */
 
     // sends userId/token pair to backend server
-    private void sendRegistrationToServer(String userId, String token) {
+    private void sendRegistrationToServer(String userId, String username, String token) {
 
         new ServletPostAsyncTask().execute(new GCMParams(
-                getApplicationContext(), "saveToken", userId, token, "", "", "", "")
+                getApplicationContext(), "saveToken", userId, username, token, "", "", "", "")
         );
-
+        Log.d("REGISTRATION", "completed!");
     }
 
 }

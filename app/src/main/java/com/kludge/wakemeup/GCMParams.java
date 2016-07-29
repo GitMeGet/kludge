@@ -10,6 +10,7 @@ public class GCMParams {
     private Context mContext;
     private String type;
     private String userId;
+    private String username;
     private String token;
     private String targetId;
     private String timeInMillis;
@@ -18,16 +19,25 @@ public class GCMParams {
 
     public GCMParams(){}
 
-    public GCMParams(Context context, String type, String userId, String token, String targetId,
+    public GCMParams(Context context, String type, String userId, String username, String token, String targetId,
                      String timeInMillis, String message, String alarmId){
         mContext = context;
         this.type = type;
         this.userId = userId;
+        this.username = username;
         this.token = token;
         this.targetId = targetId;
         this.timeInMillis = timeInMillis;
         this.message = message;
         this.alarmId = alarmId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setmContext(Context mContext) {

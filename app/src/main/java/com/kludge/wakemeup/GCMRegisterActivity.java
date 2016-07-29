@@ -109,6 +109,7 @@ public class GCMRegisterActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), GCMRegistrationIntentService.class);
                     // add username to intent extra
                     userId = mUserIdEditText.getText().toString();
+
                     intent.putExtra("userId", userId);
 
                     // save userId to SharedPrefs
@@ -121,7 +122,6 @@ public class GCMRegisterActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     // make sure necessary input fields are filled

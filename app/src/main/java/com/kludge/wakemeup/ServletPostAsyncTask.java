@@ -2,6 +2,7 @@ package com.kludge.wakemeup;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,6 +27,7 @@ public class ServletPostAsyncTask extends AsyncTask<GCMParams, Void, String> {
     String type;
     String token;
     String userId;
+    String username;
     String targetId;
     String timeInMillis;
     String message;
@@ -37,6 +39,7 @@ public class ServletPostAsyncTask extends AsyncTask<GCMParams, Void, String> {
         type = params[0].getType();
         token = params[0].getToken();
         userId = params[0].getUserId();
+        username = params[0].getUsername();
         targetId = params[0].getTargetId();
         timeInMillis = params[0].getTimeInMillis();
         message = params[0].getMessage();
@@ -56,6 +59,7 @@ public class ServletPostAsyncTask extends AsyncTask<GCMParams, Void, String> {
             nameValuePairs.put("type", type);
             nameValuePairs.put("token", token);
             nameValuePairs.put("userId", userId);
+            nameValuePairs.put("username", username);
             nameValuePairs.put("targetId", targetId);
             nameValuePairs.put("timeInMillis", timeInMillis);
             nameValuePairs.put("message", message);
@@ -101,6 +105,8 @@ public class ServletPostAsyncTask extends AsyncTask<GCMParams, Void, String> {
             } else {
                 result.append("&");
             }
+
+            Log.d("Async build str: ", entry.getValue());
 
             result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
             result.append("=");

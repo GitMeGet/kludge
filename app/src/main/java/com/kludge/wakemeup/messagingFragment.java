@@ -105,7 +105,7 @@ public class MessagingFragment extends ListFragment {
     // post P2P message to server
     private void sendP2PMessage(String message) {
         new ServletPostAsyncTask().execute(new GCMParams(
-                getContext(), "sendP2PMessage", userId, "", targetId, "", message, ""));
+                getContext(), "sendP2PMessage", userId, "" ,"", targetId, "", message, ""));
     }
 
     // set broadcast receiver to listen from GCMListenerService
@@ -159,14 +159,14 @@ class MessageAdapter extends ArrayAdapter<Pair<String, String>>{
         //retrieve individual userInfo
         final Pair<String, String> messageInfo = getItem(position);
 
-        String userId = getContext().getSharedPreferences("preferences_user", Context.MODE_PRIVATE).getString("userId", "");
+        String username = getContext().getSharedPreferences("preferences_user", Context.MODE_PRIVATE).getString("username", "ERR_NAME_NULL");
         TextView message;
 
-        if (messageInfo.first.equals(userId)) {
+        if (messageInfo.first.equals(username)) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.message_list_item_right, parent, false);
 
             message = (TextView) convertView.findViewById(R.id.message_textview);
-            message.setText(userId + ": " + messageInfo.second);
+            message.setText(username + ": " + messageInfo.second);
         }
         else {
             String targetId = messageInfo.first;

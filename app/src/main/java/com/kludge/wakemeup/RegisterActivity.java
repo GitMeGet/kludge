@@ -2,6 +2,7 @@ package com.kludge.wakemeup;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -168,10 +169,29 @@ class RegisterActivity extends AppCompatActivity implements
                             //register database
                             FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
                             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                            String userId = fUser.getUid();
+                            String username = fUser.getDisplayName();
 
-                            User user = new User(fUser.getDisplayName(), fUser.getUid(), FirebaseInstanceId.getInstance().getToken(), 0);
+                            User user = new User(username, userId, FirebaseInstanceId.getInstance().getToken(), 0);
 
-                            mDatabase.child("users").child(fUser.getDisplayName()).setValue(user);
+                            mDatabase.child("users").child(userId).setValue(user);
+
+                            //save userID(googleID) to servlet
+                            // Start IntentService to register this application with GCM.
+                            Intent intent = new Intent(getApplicationContext(), GCMRegistrationIntentService.class);
+                            // add username to intent extra
+
+                            intent.putExtra("userId", userId);
+                            intent.putExtra("username", username);
+
+                            // save userId to SharedPrefs and USERNAME
+                            SharedPreferences sharedPreferences = getSharedPreferences("preferences_user", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("userId", userId);
+                            editor.putString("username", username);
+                            editor.apply();
+
+                            startService(intent);
                         }
                         // [START_EXCLUDE]
                         //hideProgressDialog();
