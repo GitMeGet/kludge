@@ -33,7 +33,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 /**
  * Demonstrate Firebase Authentication using a Google ID Token.
  */
-class RegisterActivity extends AppCompatActivity implements
+public class RegisterActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 

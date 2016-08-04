@@ -107,7 +107,7 @@ public class ScoreboardActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case ID_SEND_REQUEST:
                 //send a forced activity to wake user up straight... call? text?
-                
+
 
                 Toast.makeText(getApplicationContext(), "Request Sent!", Toast.LENGTH_SHORT).show();
         }

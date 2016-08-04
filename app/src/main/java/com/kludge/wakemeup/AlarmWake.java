@@ -36,7 +36,7 @@ public class AlarmWake extends FragmentActivity {
     Intent ringService;
     UserManager userManager;
     private TextToSpeech mTextToSpeech;
-    private boolean isP2PReceiverRegistered;
+    private boolean isP2PReceiverRegistered = false;
     public static ArrayList<Pair<String, String>> messageArrayList;
 
     FirebaseUser fUser;
@@ -107,7 +107,7 @@ public class AlarmWake extends FragmentActivity {
                 userManager.resetSnooze();
 
                 //reset snoozeFreq to 0 in fcm database
-                mDatabase.child("users").child(fUser.getDisplayName()).child("snoozeFreq").setValue("0");
+                mDatabase.child("users").child(fUser.getUid()).child("snoozeFreq").setValue("0");
 
                 switch(alarm.getGame()){
                     case AlarmDetails.GAME_DISABLED:
@@ -149,9 +149,9 @@ public class AlarmWake extends FragmentActivity {
 
                     userManager.increaseSnooze();
                     //update fcm database on snoozeFreq, increment
-                    mDatabase.child("users").child(fUser.getDisplayName()).child("snoozeFreq").setValue(userManager.getSnooze());
+                    mDatabase.child("users").child(fUser.getUid()).child("snoozeFreq").setValue(userManager.getSnooze());
                     //set the current alarm time in database
-                    mDatabase.child("users").child(fUser.getDisplayName()).child("lastAlarmTime").setValue(""+alarm.getHour()+":"+(alarm.getMin()<10?" "+alarm.getMin():alarm.getMin()));
+                    mDatabase.child("users").child(fUser.getUid()).child("lastAlarmTime").setValue(""+alarm.getHour()+":"+(alarm.getMin()<10?" "+alarm.getMin():alarm.getMin()));
 
                     // re-register snoozed alarm
                     alarm.registerAlarmIntent(c, AlarmDetails.SNOOZE_ALARM);
@@ -180,7 +180,7 @@ public class AlarmWake extends FragmentActivity {
 
             // enable startP2PMessaging button
             mStartP2PMessaging.setVisibility(View.VISIBLE);
-            mStartP2PMessaging.setText("Contact " + targetId);
+            mStartP2PMessaging.setText("Contact User");
 
             mStartP2PMessaging.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -274,12 +274,16 @@ public class AlarmWake extends FragmentActivity {
     protected void onDestroy() {
 
         // unregister P2P message broadcast receiver
-        LocalBroadcastManager.getInstance(getParent()).unregisterReceiver(mP2PMessageBroadcastReceiver);
+        if(isP2PReceiverRegistered)
+            LocalBroadcastManager.getInstance(getParent()).unregisterReceiver(mP2PMessageBroadcastReceiver);
         isP2PReceiverRegistered = false;
 
         // release text to speech resources
-        mTextToSpeech.stop();
-        mTextToSpeech.shutdown();
+        if(mTextToSpeech != null)
+        {
+            mTextToSpeech.stop();
+            mTextToSpeech.shutdown();
+        }
 
         super.onDestroy();
     }
