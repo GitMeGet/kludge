@@ -45,7 +45,7 @@ public class ScoreboardActivity extends AppCompatActivity {
 
     public static final int ID_SEND_REQUEST = 100;
 
-    ArrayList<Pair<String, String>> userInfo = new ArrayList<>(); //pair of strings of USERNAME + SNOOZEFREQ
+    ArrayList<Pair<String, Pair<String, String>>> userInfo = new ArrayList<>(); //pair of strings of USERNAME + (SNOOZEFREQ + photoURL)
     Firebase rootRef = new Firebase("https://wakemeup-1373.firebaseio.com"); //firebase ref
 
 
@@ -67,7 +67,7 @@ public class ScoreboardActivity extends AppCompatActivity {
     }
 
     //fetch data from firebase database and load in the arraylist with data
-    private void loadUsers(final ArrayList<Pair<String, String>> userInfo){
+    private void loadUsers(final ArrayList<Pair<String, Pair<String, String>>> userInfo){
 
         rootRef.child("users").addValueEventListener(new ValueEventListener() {
             @Override
@@ -75,7 +75,10 @@ public class ScoreboardActivity extends AppCompatActivity {
                 for(DataSnapshot data : dataSnapshot.getChildren()){
                     HashMap userMap = (HashMap) data.getValue();
                     userInfo.add(new Pair<>((String)userMap.get("username"),
-                            (Integer.parseInt(userMap.get("snoozeFreq").toString())>0)?"has snoozed "+ userMap.get("snoozeFreq")+" times since "+userMap.get("lastAlarmTime")+" already!":"has not snoozed yet!"));
+                            new Pair<>(((Integer.parseInt(userMap.get("snoozeFreq").toString())>0)?
+                                    "has snoozed "+ userMap.get("snoozeFreq")+" times since "+userMap.get("lastAlarmTime")+" already!"
+                                    :"has not snoozed yet!"),
+                            (String) userMap.get("photoUrl"))));
                 }
 
                 scoreAdapter.notifyDataSetChanged();
@@ -115,9 +118,9 @@ public class ScoreboardActivity extends AppCompatActivity {
     }
 }
 //arrayAdapter for the 'scoreboard'
-class ScoreAdapter extends ArrayAdapter<Pair<String, String>>{
+class ScoreAdapter extends ArrayAdapter<Pair<String, Pair<String, String>>>{
 
-    public ScoreAdapter(Context context, ArrayList<Pair<String, String>> userInfo){
+    public ScoreAdapter(Context context, ArrayList<Pair<String, Pair<String, String>>> userInfo){
         super(context, 0, userInfo);
     }
 
@@ -133,7 +136,7 @@ class ScoreAdapter extends ArrayAdapter<Pair<String, String>>{
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //retrieve individual userInfo
-        final Pair<String, String> userInfo = getItem(position);
+        final Pair<String, Pair<String, String>> userInfo = getItem(position);
 
         if (convertView == null)
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.scoreboard_list_item, parent, false);
@@ -145,8 +148,8 @@ class ScoreAdapter extends ArrayAdapter<Pair<String, String>>{
         viewHolder.scorebPropic = (ImageView) convertView.findViewById(R.id.view_scoreboard_propic);
 
         viewHolder.scorebUser.setText(userInfo.first);
-        viewHolder.scorebSnoozes.setText(userInfo.second);
-        new LoadImageFromURL(viewHolder).execute(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
+        viewHolder.scorebSnoozes.setText(userInfo.second.first);
+        new LoadImageFromURL(viewHolder).execute(userInfo.second.second);
 
         return convertView;
         //super.getView(position, convertView, parent);

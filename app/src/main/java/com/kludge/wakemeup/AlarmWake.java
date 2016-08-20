@@ -132,7 +132,7 @@ public class AlarmWake extends FragmentActivity {
         assert buttonSnooze != null;
 
         if(userManager.getScore() <= 0){
-            buttonSnooze.setTextColor(getColor(R.color.colorLightGrey)); //set font to light grey colour
+            buttonSnooze.setTextColor(getApplicationContext().getResources().getColor(R.color.colorLightGrey)); //set font to light grey colour
         }
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -261,7 +261,7 @@ public class AlarmWake extends FragmentActivity {
             messageArrayList.add(incomingP2PMessage);
 
             // read out incomingP2P message
-            mTextToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, "TextToSpeechIncomingP2PMessage");
+            mTextToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null);
         }
     };
 

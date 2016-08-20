@@ -3,6 +3,7 @@ package com.kludge.wakemeup;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -171,8 +172,9 @@ public class RegisterActivity extends AppCompatActivity implements
                             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
                             String userId = fUser.getUid();
                             String username = fUser.getDisplayName();
+                            Uri photoUrl = fUser.getPhotoUrl();
 
-                            User user = new User(username, userId, FirebaseInstanceId.getInstance().getToken(), 0);
+                            User user = new User(username, userId, FirebaseInstanceId.getInstance().getToken(), 0, photoUrl.toString());
 
                             mDatabase.child("users").child(userId).setValue(user);
 

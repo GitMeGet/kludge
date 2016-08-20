@@ -52,7 +52,7 @@ public class GCMRequestActivity extends AppCompatActivity {
     EditText mTargetIdEditText;
 
     //firebase and reqAdapter stuff
-    ArrayList<Pair<String, String>> userInfo = new ArrayList<>(); //pair of strings of USERNAME + USERID
+    ArrayList<Pair<String, Pair<String, String>>> userInfo = new ArrayList<>(); //pair of strings of USERNAME + USERID
     Firebase rootRef = new Firebase("https://wakemeup-1373.firebaseio.com"); //firebase ref
     RequestAdapter requestlistAdapter;
 
@@ -96,39 +96,6 @@ public class GCMRequestActivity extends AppCompatActivity {
         requestlistAdapter.notifyDataSetChanged();
 
         registerForContextMenu(requestList);
-
-        /*
-         mTargetIdEditText = (EditText) findViewById(R.id.targetIdEditText);
-        mTargetIdEditText.setText(targetId);
-
-        Button mRequestTargetIdButton = (Button) findViewById(R.id.requestTargetIdButton);
-        assert mRequestTargetIdButton != null;
-        mRequestTargetIdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // make sure both input fields are filled
-                if (!validateInputs())
-                    return;
-
-                targetId = mTargetIdEditText.getText().toString();
-
-                new ServletPostAsyncTask().execute(new GCMParams(
-                        getApplicationContext(), "requestTarget", userId , username,"", targetId,
-                        timeInMillis, requestMessage, Long.toString(alarmId)));
-            }
-        });
-
-        Button mP2PMessagingButton = (Button) findViewById(R.id.buttonP2PMessaging);
-        assert mP2PMessagingButton != null;
-        mP2PMessagingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), MessagingActivity.class);
-                i.putExtra("targetId", targetId);
-                startActivity(i);
-            }
-        });
-        */
     }
 
     //just to send request
@@ -151,7 +118,7 @@ public class GCMRequestActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case ID_SEND_REQUEST:
 
-                targetId = userInfo.get(info.position).second; //fetch userID from the position and arrayList
+                targetId = userInfo.get(info.position).second.first; //fetch userID from the position and arrayList
 
                 new ServletPostAsyncTask().execute(new GCMParams(
                         getApplicationContext(), "requestTarget", userId , username,"", targetId,
@@ -172,14 +139,14 @@ public class GCMRequestActivity extends AppCompatActivity {
     }
 
     //fetch data from firebase database and load in the arraylist with data
-    private void loadUsers(final ArrayList<Pair<String, String>> userInfo){
+    private void loadUsers(final ArrayList<Pair<String, Pair<String,String>>> userInfo){
 
         rootRef.child("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot data : dataSnapshot.getChildren()){
                     HashMap userMap = (HashMap) data.getValue();
-                    userInfo.add(new Pair<>((String)userMap.get("username"), (String)userMap.get("userID")));
+                    userInfo.add(new Pair<>((String)userMap.get("username"), new Pair<>((String)userMap.get("userID"),(String)userMap.get("photoUrl"))));
                 }
 
                 requestlistAdapter.notifyDataSetChanged();
@@ -195,9 +162,9 @@ public class GCMRequestActivity extends AppCompatActivity {
 }
 
 //arrayAdapter for the 'scoreboard'
-class RequestAdapter extends ArrayAdapter<Pair<String, String>> {
+class RequestAdapter extends ArrayAdapter<Pair<String, Pair<String,String>>> {
 
-    public RequestAdapter(Context context, ArrayList<Pair<String, String>> userInfo){
+    public RequestAdapter(Context context, ArrayList<Pair<String, Pair<String,String>>> userInfo){
         super(context, 0, userInfo);
     }
 
@@ -212,7 +179,7 @@ class RequestAdapter extends ArrayAdapter<Pair<String, String>> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //retrieve individual userInfo
-        final Pair<String, String> userInfo = getItem(position);
+        final Pair<String, Pair<String, String>> userInfo = getItem(position);
 
         if (convertView == null)
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.requestlist_list_item, parent, false);
@@ -225,8 +192,7 @@ class RequestAdapter extends ArrayAdapter<Pair<String, String>> {
         viewHolder.requestbPropic = (ImageView) convertView.findViewById(R.id.view_requestlist_propic);
 
         viewHolder.requestbUser.setText(userInfo.first);
-
-        new ReqLoadImageFromURL(viewHolder).execute(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
+        new ReqLoadImageFromURL(viewHolder).execute(userInfo.second.second);
 
         return convertView;
         //super.getView(position, convertView, parent);

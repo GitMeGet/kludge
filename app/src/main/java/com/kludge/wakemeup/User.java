@@ -14,17 +14,28 @@ public class User {
     private String userID;
     private String tokenID;
     private int snoozeFreq;
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    private String photoUrl;
     private String lastAlarmTime;
 
     public User() {}
 
-    public User(String username, String userID, String tokenID, int snoozeFreq){
+    public User(String username, String userID, String tokenID, int snoozeFreq, String photoUrl){
 
         this.username = username;
         this.userID = userID;
         this.tokenID = tokenID;
         this.snoozeFreq = snoozeFreq;
         this.lastAlarmTime = "NULL";
+        this.photoUrl = photoUrl;
     }
 
     public Long getId() {
