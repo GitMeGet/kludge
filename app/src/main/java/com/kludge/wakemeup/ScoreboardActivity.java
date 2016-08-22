@@ -21,14 +21,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 import org.w3c.dom.Text;
@@ -46,7 +45,7 @@ public class ScoreboardActivity extends AppCompatActivity {
     public static final int ID_SEND_REQUEST = 100;
 
     ArrayList<Pair<String, Pair<String, String>>> userInfo = new ArrayList<>(); //pair of strings of USERNAME + (SNOOZEFREQ + photoURL)
-    Firebase rootRef = new Firebase("https://wakemeup-1373.firebaseio.com"); //firebase ref
+    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference(); //firebase ref
 
 
     ScoreAdapter scoreAdapter;
@@ -85,7 +84,7 @@ public class ScoreboardActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError firebaseError) {
                 Toast.makeText(getApplicationContext(), "The read failed: " + firebaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

@@ -110,6 +110,7 @@ public class GCMListenerService extends FirebaseMessagingService {
                 Intent newMessage = new Intent("incomingP2PMessage");
                 newMessage.putExtra("message", message);
                 newMessage.putExtra("targetId", userId);
+                newMessage.putExtra("targetUsername", username);
                 boolean b = LocalBroadcastManager.getInstance(this).sendBroadcast(newMessage);
 
                 Log.d(TAG, "sent incomingP2PMessage broadcast" + " " + b);

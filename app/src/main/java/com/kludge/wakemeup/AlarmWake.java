@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -26,7 +25,7 @@ import java.util.Locale;
 
 public class AlarmWake extends FragmentActivity {
 
-    Firebase rootRef = new Firebase("https://wakemeup-1373.firebaseio.com"); //firebase ref
+    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference(); //firebase ref
 
     public static final int MATH_GAME = 1;
     public static final int PONG_GAME = 2;
@@ -256,8 +255,9 @@ public class AlarmWake extends FragmentActivity {
 
             String message = intent.getStringExtra("message");
             String targetId = intent.getStringExtra("targetId");
+            String targetUsername = intent.getStringExtra("targetUsername");
 
-            Pair<String, String> incomingP2PMessage = new Pair<>(targetId, message);
+            Pair<String, String> incomingP2PMessage = new Pair<>(targetUsername, message);
             messageArrayList.add(incomingP2PMessage);
 
             // read out incomingP2P message

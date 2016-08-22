@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
@@ -25,11 +26,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -53,7 +55,7 @@ public class GCMRequestActivity extends AppCompatActivity {
 
     //firebase and reqAdapter stuff
     ArrayList<Pair<String, Pair<String, String>>> userInfo = new ArrayList<>(); //pair of strings of USERNAME + USERID
-    Firebase rootRef = new Firebase("https://wakemeup-1373.firebaseio.com"); //firebase ref
+    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference(); //firebase ref
     RequestAdapter requestlistAdapter;
 
     private AlarmDetails alarm;
@@ -83,7 +85,7 @@ public class GCMRequestActivity extends AppCompatActivity {
         timeInMillis = Long.toString(alarm.getTimeInMillis());
 
         // get message
-        requestMessage = "I have important business tmr";
+        requestMessage = "Can you WakeMeUp at "+alarm.getHour()+":"+(alarm.getMin()<10?"0":"")+alarm.getMin()+"?";
 
         //firebase list of users
         loadUsers(userInfo);
@@ -153,7 +155,7 @@ public class GCMRequestActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError firebaseError) {
                 Toast.makeText(getApplicationContext(), "The read failed: " + firebaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

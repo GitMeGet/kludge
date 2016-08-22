@@ -28,6 +28,7 @@ public class MessagingFragment extends ListFragment {
 
     private long alarmId;
     public String userId, targetId;
+    public String username, targetUsername;
     private boolean isP2PReceiverRegistered;
     private ArrayList<Pair<String, String>> messageArrayList;
     private MessageAdapter messageAdapter;
@@ -59,21 +60,24 @@ public class MessagingFragment extends ListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // get userId and targetId from SharedPreferences
-        userId = getActivity().getSharedPreferences("preferences_user", getActivity().MODE_PRIVATE).getString("userId", "");
-
+        // get username and targetId from SharedPreferences
+        username = getActivity().getSharedPreferences("preferences_user", getActivity().MODE_PRIVATE).getString("username", "ERR_NULL_NAME");
+        userId = getActivity().getSharedPreferences("preferences_user", getActivity().MODE_PRIVATE).getString("userId", "ERR_ID_NULL");
         alarmId = getActivity().getIntent().getLongExtra("alarmId", -1);
 
         AlarmDetails alarm = AlarmLab.get(getContext()).getAlarmDetails(alarmId);
 
         // *** potentially more than 1 unique targetId, shouldn't store in SharedPrefs; should be in AlarmDetails ***
 
-        if (alarm == null) // when waker starts fragment from MessagingActivity
+        if (alarm == null) { // when waker starts fragment from MessagingActivity
+            targetUsername = getArguments().getString("targetUsername");
             targetId = getArguments().getString("targetId");
-        else // when wakee starts fragment from AlarmWake
+        }
+        else { // when wakee starts fragment from AlarmWake
+            targetUsername = getArguments().getString("targetUsername");
             targetId = alarm.getTargetId();
+        }
         Log.i("Messaging Fragment", "targetId is " + targetId);
-
         final EditText mP2PMessageEditText = (EditText) view.findViewById(R.id.P2PMessageEditText);
         Button mSendP2PMessageButton = (Button) view.findViewById(R.id.sendP2PMessageButton);
 
@@ -89,7 +93,7 @@ public class MessagingFragment extends ListFragment {
                 sendP2PMessage(message);
 
                 // save message to messageArrayList to be displayed by P2PMessageListView
-                Pair<String, String> outgoingP2PMessage = new Pair<>(userId, message);
+                Pair<String, String> outgoingP2PMessage = new Pair<>(username, message);
                 messageArrayList.add(outgoingP2PMessage);
 
                 // refresh messageAdapter
@@ -160,6 +164,7 @@ class MessageAdapter extends ArrayAdapter<Pair<String, String>>{
         final Pair<String, String> messageInfo = getItem(position);
 
         String username = getContext().getSharedPreferences("preferences_user", Context.MODE_PRIVATE).getString("username", "ERR_NAME_NULL");
+        String userId = getContext().getSharedPreferences("preferences_user", Context.MODE_PRIVATE).getString("userId", "ERR_USERID_NULL");
         TextView message;
 
         if (messageInfo.first.equals(username)) {

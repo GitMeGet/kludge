@@ -19,6 +19,7 @@ public class GCMResponseService extends Service {
     String userId;
     String username;
     String requestId;
+    String targetUsername;
     long timeInMillis;
     String alarmId;
 
@@ -31,6 +32,7 @@ public class GCMResponseService extends Service {
 
         response = intent.getStringExtra("response");
         requestId = intent.getStringExtra("requestId"); //todo: user InstanceID or something
+        targetUsername = intent.getStringExtra("targetUsername");
         timeInMillis = intent.getLongExtra("timeInMillis", -1);
         alarmId = intent.getStringExtra("alarmId");
 
@@ -48,6 +50,7 @@ public class GCMResponseService extends Service {
 
             Intent alarmIntent = new Intent(getApplicationContext(), WakerReceiver.class);
             alarmIntent.putExtra("targetId", requestId);
+            alarmIntent.putExtra("targetUsername", targetUsername);
 
             PendingIntent wakeIntent = PendingIntent.getBroadcast(getApplicationContext(), 135,
                     alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);

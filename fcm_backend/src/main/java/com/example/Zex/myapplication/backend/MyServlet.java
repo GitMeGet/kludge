@@ -86,7 +86,7 @@ public class MyServlet extends HttpServlet {
                     break;
                 case "sendP2PMessage":
                     targetToken = mUserIdTokenMap.get(targetId);
-                    //username = mUsernameMap.get(targetId);
+                    username = mUsernameMap.get(targetId);
                     sendP2PMessage(userId, username, targetToken, "incomingP2PMessage", message);
                     pushFCMp2p(userId, username, targetToken, "incomingP2PMessage", message);
                     break;

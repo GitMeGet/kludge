@@ -43,15 +43,13 @@ public class RingtoneService extends Service {
                 0);
 
 
-        try {
+
             // play ringtone
             alarm_ringer = MediaPlayer.create(getApplicationContext(), Uri.parse(intent.getStringExtra("ringtone")));
             alarm_ringer.setLooping(true);
-            alarm_ringer.prepare();
+
             alarm_ringer.start();
-        } catch (IOException e) {
-            Log.d("LMAO ringtone fail", "prepare gone");
-        }
+
 
         return START_NOT_STICKY;
     }
